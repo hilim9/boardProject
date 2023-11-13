@@ -61,4 +61,14 @@ public class Utils {
         return String.format("%s/" + tplPath, isMobile() ? "mobile":"front");
     }
 
+    public static void loginInit(HttpSession session) {
+        
+        // 유효성 값 제거
+        session.removeAttribute("email");
+        session.removeAttribute("NotBlank_email");
+        session.removeAttribute("NotBlank_password");
+        session.removeAttribute("globalError");
+
+    }
+
 }

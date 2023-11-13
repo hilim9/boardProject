@@ -41,7 +41,8 @@ file:
 
 # 로거 설정
 logging:
-  org:
-    springframework:
-      jdbc: trace
+  level:
+    org:
+      springframework:
+        jdbc: trace
 

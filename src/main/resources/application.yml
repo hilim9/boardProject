@@ -33,6 +33,8 @@ spring:
     cache: false
     prefix: file:src/main/resources/templates/
 
+  flyway:
+    enabled: true
 
 file:
   upload:

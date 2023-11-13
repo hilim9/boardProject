@@ -15,6 +15,14 @@ public class MemberController {
 
     @GetMapping("/join")
     public String join() {
+
         return utils.tpl("member/join");
     }
+
+    @GetMapping("/login")
+    public String login() {
+
+        return utils.tpl("member/login");
+    }
+
 }

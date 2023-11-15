@@ -3,6 +3,8 @@ sqls/member.sql
 sqls/data.sql
 sqls
 jpaex
+jpaex/Ex02.java
+jpaex/Ex01.java
 HELP.md
 .gradle
 build/

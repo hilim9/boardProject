@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_member_userNm", columnList = "userNm"),
         @Index(name = "idx_member_mobile", columnList = "mobile")
 })
-public class Member {
+public class Member extends Base {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userNo;
@@ -39,16 +39,16 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER; // 기본값 일반회원
 
-    @Column(updatable = false) // update 가능 여부
+    @Transient // DB반영 X 내부에서만 사용
+    private String tmpData;
+
+    /*@Column(updatable = false) // update 가능 여부
     @CreationTimestamp
     private LocalDateTime regDt;
 
     @Column(insertable = false) // insert 가능 여부
     @UpdateTimestamp
-    private LocalDateTime modDt;
-    
-    @Transient // DB반영 X 내부에서만 사용
-    private String tmpData;
+    private LocalDateTime modDt;*/
 
     /*@Temporal()
     private Date date;*/

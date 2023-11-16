@@ -14,13 +14,10 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardData {
+public class BoardData extends BaseMember {
 
     @Id @GeneratedValue
     private Long seq;
-
-    @Column(length = 65, nullable = false)
-    private String poster;
 
     @Column(length = 100, nullable = false)
     private String subject;
@@ -28,14 +25,5 @@ public class BoardData {
     @Lob
     @Column(nullable = false)
     private String content;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime regDt;
-
-    @UpdateTimestamp
-    @Column(insertable = false)
-    private LocalDateTime modDt;
-
 
 }

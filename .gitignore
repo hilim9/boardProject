@@ -2,7 +2,7 @@ application-dev.*
 sqls/member.sql
 sqls/data.sql
 sqls
-jpaex
+
 HELP.md
 .gradle
 build/

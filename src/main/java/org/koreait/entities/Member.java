@@ -2,14 +2,7 @@ package org.koreait.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.koreait.commons.constants.MemberType;
-import org.koreait.models.member.MemberProfile;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor

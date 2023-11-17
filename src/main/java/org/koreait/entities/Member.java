@@ -39,25 +39,4 @@ public class Member extends Base {
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER; // 기본값 일반회원
 
-    @Transient // DB반영 X 내부에서만 사용
-    private String tmpData;
-
-    @ToString.Exclude // 출력 배제 -> 순환 참조 해결
-    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
-    private List<BoardData> items = new ArrayList<>();
-
-    @OneToOne
-    @JoinColumn(name = "profile_seq")
-    private MemberProfile profile;
-
-    /*@Column(updatable = false) // update 가능 여부
-    @CreationTimestamp
-    private LocalDateTime regDt;
-
-    @Column(insertable = false) // insert 가능 여부
-    @UpdateTimestamp
-    private LocalDateTime modDt;*/
-
-    /*@Temporal()
-    private Date date;*/
 }

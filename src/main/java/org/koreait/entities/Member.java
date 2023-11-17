@@ -1,15 +1,15 @@
 package org.koreait.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.koreait.commons.constants.MemberType;
+import org.koreait.models.member.MemberProfile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
@@ -41,6 +41,14 @@ public class Member extends Base {
 
     @Transient // DB반영 X 내부에서만 사용
     private String tmpData;
+
+    @ToString.Exclude // 출력 배제 -> 순환 참조 해결
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+    private List<BoardData> items = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "profile_seq")
+    private MemberProfile profile;
 
     /*@Column(updatable = false) // update 가능 여부
     @CreationTimestamp

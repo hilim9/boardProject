@@ -12,11 +12,22 @@ public class MemberUtil {
     private final HttpSession session;
 
     public boolean isLogin() { // 로그인 여부 조회
+
         return getMember() != null; // true면 로그인 false면 로그인X
     }
 
     public Member getMember() { // 메모리 할당하지 않고 바로 반환
+
         return (Member) session.getAttribute("loginMember");
     }
+
+    /* 관리자 여부
+    * @return
+    */
+
+    /*public boolean isAdmin() {
+
+        return isLogin() && getMember().getRole
+    }*/
 
 }

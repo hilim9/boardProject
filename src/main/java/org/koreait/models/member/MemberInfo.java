@@ -14,7 +14,7 @@ public class MemberInfo implements UserDetails {
     private String email;
     private String password;
 
-    private Member member;
+    public Member member;
     private Collection<? extends GrantedAuthority> authorities;
 
 

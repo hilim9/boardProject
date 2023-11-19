@@ -2,7 +2,7 @@ package org.koreait.commons;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.koreait.commons.constants.Role;
+import org.koreait.commons.constants.MemberType;
 import org.koreait.entities.Member;
 import org.koreait.models.member.MemberInfo;
 import org.modelmapper.ModelMapper;
@@ -30,7 +30,7 @@ public class MemberUtil {
      * @return 관리자 권한이 있는 경우 true, 아닌 경우 false를 반환.
      */
     public boolean isAdmin() {
-        return isLogin() && getMember().getRole() == Role.ADMIN;
+        return isLogin() && getMember().getMemberType() == MemberType.ADMIN;
     }
 
     /**

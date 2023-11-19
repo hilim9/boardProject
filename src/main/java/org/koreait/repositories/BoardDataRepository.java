@@ -12,11 +12,11 @@ import java.util.List;
 
 public interface BoardDataRepository extends JpaRepository<BoardData, Long>, QuerydslPredicateExecutor<BoardData> {
 
-    List<BoardData> findByCreatedAtBetween(LocalDateTime sdate, LocalDateTime edate, Pageable pageable); // 페이징 추가
+    /*List<BoardData> findByCreatedAtBetween(LocalDateTime sdate, LocalDateTime edate, Pageable pageable); // 페이징 추가
 
 
     List<BoardData> findBySubjectContainingOrContentContainingOrderBySeqDesc(String subject, String content);
 
     @Query("SELECT b FROM BoardData b WHERE b.subject LIKE :key1 OR b.content LIKE :key2 ORDER BY b.seq DESC")
-    List<BoardData> getList(@Param("key1") String subject, @Param("key2") String content);
+    List<BoardData> getList(@Param("key1") String subject, @Param("key2") String content);*/
 }

@@ -48,7 +48,7 @@ public class MemberController {
         return utils.tpl("member/login");
     }
 
-    @ResponseBody
+    /*@ResponseBody
     @GetMapping("/info")
     public void info() {
 
@@ -80,7 +80,7 @@ public class MemberController {
 
     /*public void info(Principal principal) {
         String email = principal.getName();
-        log.info(email);*/
-    }
+        log.info(email);
+    }*/
 
 }

@@ -39,6 +39,9 @@ public class Member extends Base {
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER; // 기본값 일반회원
 
+    @Lob
+    private String termsAgree; // 약관 동의 내역
+
     @Transient // DB반영 X 내부에서만 사용
     private String tmpData;
 

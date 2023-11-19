@@ -5,6 +5,7 @@ import org.koreait.commons.MemberUtil;
 import org.koreait.commons.exceptions.AuthorizationException;
 import org.koreait.entities.FileInfo;
 import org.koreait.entities.Member;
+import org.koreait.models.member.MemberInfo;
 import org.koreait.repositories.FileInfoRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,8 @@ public class FileDeleteService {
 
         /* 파일 삭제 권한 체크 S */
         String createdBy = item.getCreatedBy(); // 파일 업로드한 사용자 아이디
-        Member member = memberUtil.getMember();
-        if(createdBy != null && createdBy.isBlank() /*&& !memberUtil.isAdmin()*/
+        MemberInfo member = memberUtil.getMember();
+        if(createdBy != null && createdBy.isBlank() && !memberUtil.isAdmin()
             && (!memberUtil.isLogin()
                 || (memberUtil.isLogin() && !member.getEmail().equals(createdBy)))) {
 

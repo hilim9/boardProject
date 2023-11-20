@@ -2,19 +2,23 @@ package org.koreait.models.member;
 
 import lombok.Builder;
 import lombok.Data;
+import org.koreait.commons.constants.MemberType;
 import org.koreait.entities.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * 회원 정보를 담는 클래스입니다. Spring Security의 UserDetails 인터페이스를 구현하여 사용자 정보와 권한 정보를 제공
+ */
 @Data @Builder
 public class MemberInfo implements UserDetails {
 
     private String email;
     private String password;
-
-    private Member member;
+    public Member member;
+    private MemberType memberType;
     private Collection<? extends GrantedAuthority> authorities;
 
 

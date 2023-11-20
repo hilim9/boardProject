@@ -2,12 +2,9 @@ package org.koreait.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.koreait.commons.constants.MemberType;
 import org.koreait.models.member.MemberProfile;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class Member extends Base {
     @Column(length = 11)
     private String mobile;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 15, nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER; // 기본값 일반회원
 

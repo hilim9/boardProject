@@ -1,4 +1,7 @@
 application-dev.*
+sqls/member.sql
+sqls/data.sql
+sqls
 HELP.md
 .gradle
 build/

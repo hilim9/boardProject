@@ -3,6 +3,8 @@ sqls/member.sql
 sqls/data.sql
 sqls
 HELP.md
+test
+src/main/resources/templates/test.html
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

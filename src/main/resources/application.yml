@@ -13,6 +13,21 @@ spring:
     username: PROJECT
     password: _aA123456
 
+  # JPA 설정
+  jpa:
+    properties:
+      hibernate:
+        # 실행되는 쿼리 콘솔 출력
+        show_sql: true
+        # 콘솔 창에 출력되는 쿼리를 가독성 좋게 포매팅
+        format_sql: true
+        use_sql_comments: true
+        # 데이터베이스 플랫폼 설정
+        dialect: org.hibernate.dialect.OracleDialect
+    hibernate:
+      # DDL create 자동 (테이블 자동 생성 등)
+      ddlAuto: create
+
   # 파일 업로드 설정
   servlet:
     multipart:
@@ -45,6 +60,8 @@ file:
 logging:
   level:
     org:
-      springframework:
-        jdbc: trace
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
 

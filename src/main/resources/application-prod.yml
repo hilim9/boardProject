@@ -1,0 +1,66 @@
+server:
+  port: 3000
+
+spring:
+  # 데이터베이스 설정
+  datasource:
+    driverClassName: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: PROJECT
+    password: _aA123456
+
+  # JPA 설정
+  jpa:
+    open-in-view: true
+    properties:
+      hibernate:
+        # 실행되는 쿼리 콘솔 출력
+        show_sql: true
+        # 콘솔 창에 출력되는 쿼리를 가독성 좋게 포매팅
+        format_sql: true
+        use_sql_comments: true
+        # 데이터베이스 플랫폼 설정
+        dialect: org.hibernate.dialect.OracleDialect
+    hibernate:
+      # 애플리케이션 시작시에 기존 테이블 DROP, 테이블 새로 생성
+      ddlAuto: create
+
+  sql:
+    init:
+      mode: always
+
+  # 파일 업로드 설정
+  servlet:
+    multipart:
+      maxFileSize: 20MB
+      maxRequestSize: 40MB
+
+  # 정적 자원 설정 (CSS, JS, 이미지)
+  web:
+    resources:
+      staticLocations: file:src/main/resources/static/
+
+  # 라이브 리로드 설정 제거
+#  devtools:
+#    livereload:
+#      enabled: true
+
+  # 타임리프 설정
+  thymeleaf:
+    cache: true
+    prefix: classpath:/templates/
+
+file:
+  upload:
+    path: /home/team/uploads/
+    url: /uploads/
+
+# 로거 설정
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+

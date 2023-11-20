@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.koreait.commons.constants.MemberType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
 @Entity
@@ -31,5 +34,9 @@ public class Member extends Base {
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberType mtype = MemberType.USER; // 기본값 일반회원
+
+    @ToString.Exclude                   // 조회 할 때만 쿼리 수행   // 자식을 먼저 삭제후 부모를 삭제하는 방식으로 동작
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) 
+    private List<BoardData> items = new ArrayList<>();
 
 }

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MenuDetail;
 import org.koreait.commons.Menus;
 import org.koreait.commons.exceptions.CommonException;
-import org.koreait.entities.BoardData;
+import org.koreait.entities.Board;
 import org.koreait.models.board.config.BoardConfigInfoService;
 import org.koreait.models.board.config.BoardConfigListService;
 import org.koreait.models.board.config.BoardConfigSaveService;
@@ -38,7 +38,7 @@ public class BoardController {
     public String index(@ModelAttribute BoardSearch boardSearch, Model model) {
         commonProcess(model, "게시판 목록");
 
-        Page<BoardData> data = boardConfigListService.gets(boardSearch);
+        Page<Board> data = boardConfigListService.gets(boardSearch);
         model.addAttribute("items", data.getContent());
 
         return "admin/board/index";
@@ -60,14 +60,14 @@ public class BoardController {
     public String update(@PathVariable Long bId, Model model) {
         commonProcess(model, "게시판 수정");
 
-        BoardData boardData = boardConfigInfoService.get(bId, true);
-        BoardForm boardForm = new ModelMapper().map(boardData, BoardForm.class);
+        Board board = boardConfigInfoService.get(bId, true);
+        BoardForm boardForm = new ModelMapper().map(board, BoardForm.class);
         boardForm.setMode("update");
-        boardForm.setListAccessRole(boardData.getListAccessRole().toString());
-        boardForm.setViewAccessRole(boardData.getViewAccessRole().toString());
-        boardForm.setWriteAccessRole(boardData.getWriteAccessRole().toString());
-        boardForm.setReplyAccessRole(boardData.getReplyAccessRole().toString());
-        boardForm.setCommentAccessRole(boardData.getCommentAccessRole().toString());
+        boardForm.setListAccessRole(board.getListAccessRole().toString());
+        boardForm.setViewAccessRole(board.getViewAccessRole().toString());
+        boardForm.setWriteAccessRole(board.getWriteAccessRole().toString());
+        boardForm.setReplyAccessRole(board.getReplyAccessRole().toString());
+        boardForm.setCommentAccessRole(board.getCommentAccessRole().toString());
 
         model.addAttribute("boardForm", boardForm);
 
@@ -98,6 +98,10 @@ public class BoardController {
 
         // 서브 메뉴 처리
         String subMenuCode = Menus.getSubMenuCode(request);
+        model.addAttribute("subMenuCode", subMenuCode);
+
+        subMenuCode = title.equals("게시판 수정") ? "register" : subMenuCode;
+
         model.addAttribute("subMenuCode", subMenuCode);
 
         List<MenuDetail> submenus = Menus.gets("board");

@@ -3,9 +3,9 @@ package org.koreait.models.board.config;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.koreait.controllers.admin.BoardSearch;
-import org.koreait.entities.BoardData;
-import org.koreait.entities.QBoardData;
-import org.koreait.repositories.BoardDataRepository;
+import org.koreait.entities.Board;
+import org.koreait.entities.QBoard;
+import org.koreait.repositories.BoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +22,10 @@ import static org.springframework.data.domain.Sort.Order.desc;
 @RequiredArgsConstructor
 public class BoardConfigListService {
 
-    private final BoardDataRepository boardDataRepository;
+    private final BoardRepository boardRepository;
 
-    public Page<BoardData> gets(BoardSearch boardSearch) {
-        QBoardData boardData = QBoardData.boardData;
+    public Page<Board> gets(BoardSearch boardSearch) {
+        QBoard board = QBoard.board;
 
         BooleanBuilder andBuilder = new BooleanBuilder();
 
@@ -37,27 +37,26 @@ public class BoardConfigListService {
         /** 검색 조건 처리 S */
         String sopt = boardSearch.getSopt();
         String skey = boardSearch.getSkey();
-        String bId = boardData.bId.toString();
         if (sopt != null && !sopt.isBlank() && skey != null && !skey.isBlank()) {
             skey = skey.trim();
             sopt = sopt.trim();
 
             if (sopt.equals("all")) { // 통합 검색 - bId, bName
                 BooleanBuilder orBuilder = new BooleanBuilder();
-                orBuilder.or(boardData.bId.like(skey)) // contain 변경
-                        .or(boardData.bName.contains(skey));
+                orBuilder.or(board.bId.contains(skey))
+                        .or(board.bName.contains(skey));
                 andBuilder.and(orBuilder);
 
             } else if (sopt.equals("bId")) { // 게시판 아이디 bId
-                andBuilder.and(boardData.bId.like(skey)); // contain 변경
+                andBuilder.and(board.bId.contains(skey));
             } else if (sopt.equals("bName")) { // 게시판명 bName
-                andBuilder.and(boardData.bName.contains(skey));
+                andBuilder.and(board.bName.contains(skey));
             }
         }
         /** 검색 조건 처리 E */
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
-        Page<BoardData> data = boardDataRepository.findAll(andBuilder, pageable);
+        Page<Board> data = boardRepository.findAll(andBuilder, pageable);
 
         return data;
     }

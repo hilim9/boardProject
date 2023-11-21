@@ -3,18 +3,18 @@ package org.koreait.models.board.config;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
 import org.koreait.commons.constants.MemberType;
-import org.koreait.entities.BoardData;
-import org.koreait.repositories.BoardDataRepository;
+import org.koreait.entities.Board;
+import org.koreait.repositories.BoardRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class BoardConfigInfoService {
 
-    private final BoardDataRepository boardRepository;
+    private final BoardRepository boardRepository;
     private final MemberUtil memberUtil;
 
-    public BoardData get(Long bId, String location) { // 프론트, 접근 권한 체크
+    public Board get(String bId, String location) { // 프론트, 접근 권한 체크
         return get(bId, false, location);
     }
 
@@ -29,9 +29,9 @@ public class BoardConfigInfoService {
      *
      * @return
      */
-    public BoardData get(Long bId, boolean isAdmin, String location) {
+    public Board get(String bId, boolean isAdmin, String location) {
 
-        BoardData board = boardRepository.findById(bId).orElseThrow(BoardConfigNotExistException::new);
+        Board board = boardRepository.findById(bId).orElseThrow(BoardConfigNotExistException::new);
 
         if (!isAdmin) { // 권한 체크
             accessCheck(board, location);
@@ -40,7 +40,7 @@ public class BoardConfigInfoService {
         return board;
     }
 
-    public BoardData get(Long bId, boolean isAdmin) {
+    public Board get(String bId, boolean isAdmin) {
         return get(bId, isAdmin, null);
     }
 
@@ -49,7 +49,7 @@ public class BoardConfigInfoService {
      *
      * @param board
      */
-    private void accessCheck(BoardData board, String location) {
+    private void accessCheck(Board board, String location) {
         MemberType memberType = MemberType.ALL;
         if (location.equals("list")) { // 목록 접근 권한
             memberType = board.getListAccessRole();

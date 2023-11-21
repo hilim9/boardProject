@@ -5,110 +5,51 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.koreait.commons.constants.MemberType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
 
-@Data @Builder
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
-public class BoardData extends BaseMember {
+@Entity @Data @Builder
+@AllArgsConstructor @NoArgsConstructor
+@Table(indexes={
+        @Index(name="idx_boarddata_category", columnList = "category DESC"),
+        @Index(name="idx_boarddata_createAt", columnList = "createdAt DESC")
+})
+public class BoardData extends Base {
+    @Id @GeneratedValue
+    private Long seq; // 게시글 번호
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="bId")
+    private Board board;
 
-    /*@Id @GeneratedValue
-    private Long seq;
+    @Column(length=65, nullable = false)
+    private String gid = UUID.randomUUID().toString();
 
-    @Column(length = 100, nullable = false)
-    private String subject;
+    @Column(length=40, nullable = false)
+    private String poster; // 작성자
+
+    @Column(length=65)
+    private String guestPw; // 비회원 비밀번호
+
+    @Column(length=60)
+    private String category; // 게시판 분류
+
+    @Column(nullable = false)
+    private String subject; // 제목
 
     @Lob
     @Column(nullable = false)
-    private String content;*/
+    private String content; // 내용
+    private int hit; // 조회수
 
-    @ManyToOne(fetch = FetchType.LAZY) // N : 1
-    @JoinColumn(name = "userNo")
-    private Member member;
+    @Column(length=125)
+    private String ua; // User-Agent : 브라우저 정보
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<HashTag> tags = new ArrayList<>();
+    @Column(length=20)
+    private String ip; // 작성자 IP
 
-    @Id
-    @GeneratedValue
-    private Long bId; // 게시판 ID
+    private int commentCnt; // 댓글 수
 
-    @Column(length=60, nullable=false)
-    private String bName; // 게시판명
-
-    @Column(name="isUse")
-    private boolean use; // 사용 여부
-
-    private int rowsOfPage = 20; // 1페이지당 게시글 수
-
-    private boolean showViewList; // 게시글 하단 목록 노출
-
-    @Lob
-    private String category; // 게시판 분류
-
-    // 목록 접근 권한
-    @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable=false)
-    private MemberType listAccessRole = MemberType.ALL;
-
-    // 글보기 접근 권한
-    @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable=false)
-    private MemberType ViewAccessRole = MemberType.ALL;
-
-    // 글쓰기 접근 권한
-    @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable=false)
-    private MemberType writeAccessRole = MemberType.ALL;
-
-    // 답글 접근 권한
-    @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable=false)
-    private MemberType replyAccessRole = MemberType.ALL;
-
-    // 댓글 접근 권한
-    @Enumerated(EnumType.STRING)
-    @Column(length=10, nullable=false)
-    private MemberType commentAccessRole = MemberType.ALL;
-
-    // 에디터 사용 여부
-    private boolean useEditor;
-
-    // 파일 첨부 사용여부
-    private boolean useAttachFile;
-
-    // 이미지 첨부 사용여부
-    private boolean useAttachImage;
-
-    // 글작성 후 이동
-    @Column(length=10, nullable=false)
-    private String locationAfterWriting = "view";
-
-    // 답글 사용 여부
-    private boolean useReply;
-
-    // 댓글 사용 여부
-    private boolean useComment;
-
-    // 게시판 스킨
-    @Column(length=20, nullable=false)
-    private String skin = "default";
-
-    /**
-     * 게시판 분류 목록
-     *
-     * @return
-     */
-    public String[] getCategories() {
-        if (category == null) {
-            return null;
-        }
-        String[] categories = category.replaceAll("\\r", "").trim().split("\\n");
-        return categories;
-    }
-
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="userNo")
+    private Member member; // 작성 회원
 }

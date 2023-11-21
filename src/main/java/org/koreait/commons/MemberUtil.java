@@ -19,17 +19,13 @@ public class MemberUtil {
         return getMember() != null; // true면 로그인 false면 로그인X
     }
 
-    /*public Member getMember() { // 메모리 할당하지 않고 바로 반환
-
-        return (Member) session.getAttribute("loginMember");
-    }*/
-
     /**
      * 현재 사용자가 관리자 권한을 가지고 있는지 확인.
      *
      * @return 관리자 권한이 있는 경우 true, 아닌 경우 false를 반환.
      */
     public boolean isAdmin() {
+
         return isLogin() && getMember().getMemberType() == MemberType.ADMIN;
     }
 
@@ -40,7 +36,9 @@ public class MemberUtil {
      */
     public MemberInfo getMember() {
 
-        return (MemberInfo) session.getAttribute("loginMember");
+        MemberInfo memberInfo = (MemberInfo)session.getAttribute("loginMember");
+
+        return memberInfo;
     }
 
     /**

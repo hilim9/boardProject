@@ -1,10 +1,10 @@
-package org.koreait.controllers.admin;
+package org.koreait.controllers.admins;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.koreait.commons.MenuDetail;
-import org.koreait.commons.Menus;
+import org.koreait.commons.menus.MenuDetail;
+import org.koreait.commons.menus.Menu;
 import org.koreait.commons.exceptions.CommonException;
 import org.koreait.entities.Board;
 import org.koreait.models.board.config.BoardConfigInfoService;
@@ -57,7 +57,7 @@ public class BoardController {
     }
 
     @GetMapping("/{bId}/update")
-    public String update(@PathVariable Long bId, Model model) {
+    public String update(@PathVariable String bId, Model model) {
         commonProcess(model, "게시판 수정");
 
         Board board = boardConfigInfoService.get(bId, true);
@@ -97,14 +97,14 @@ public class BoardController {
         String URI = request.getRequestURI();
 
         // 서브 메뉴 처리
-        String subMenuCode = Menus.getSubMenuCode(request);
+        String subMenuCode = Menu.getSubMenuCode(request);
         model.addAttribute("subMenuCode", subMenuCode);
 
         subMenuCode = title.equals("게시판 수정") ? "register" : subMenuCode;
 
         model.addAttribute("subMenuCode", subMenuCode);
 
-        List<MenuDetail> submenus = Menus.gets("board");
+        List<MenuDetail> submenus = Menu.gets("board");
         model.addAttribute("submenus", submenus);
 
         model.addAttribute("pageTitle", title);

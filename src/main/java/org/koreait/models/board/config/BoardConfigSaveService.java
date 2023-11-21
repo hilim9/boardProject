@@ -2,9 +2,8 @@ package org.koreait.models.board.config;
 
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.constants.MemberType;
-import org.koreait.controllers.admin.BoardForm;
+import org.koreait.controllers.admins.BoardForm;
 import org.koreait.entities.Board;
-import org.koreait.entities.BoardData;
 import org.koreait.repositories.BoardRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -34,7 +33,7 @@ public class BoardConfigSaveService {
          * 게시판 등록 모드인 경우는 중복 여부 체크
          *
          */
-        String bId = boardForm.getBId();
+        String bId = boardForm.getBId().toString();
         Board board = boardRepository.findById(bId).orElseGet(Board::new);
         String mode = boardForm.getMode();
         if ((mode == null || !mode.equals("update")) && board.getBId() != null) { // 게시판 등록 -> 중복 여부 체크

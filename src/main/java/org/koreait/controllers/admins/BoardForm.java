@@ -1,4 +1,4 @@
-package org.koreait.controllers.admin;
+package org.koreait.controllers.admins;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

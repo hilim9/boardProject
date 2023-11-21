@@ -14,6 +14,7 @@ public class Utils {
 
     private static ResourceBundle validationsBundle;
     private static ResourceBundle errorsBundle;
+    private static ResourceBundle commonsBundle;
 
     private final HttpServletRequest request;
 
@@ -24,13 +25,21 @@ public class Utils {
     static {
         validationsBundle = ResourceBundle.getBundle("messages.validations");
         errorsBundle = ResourceBundle.getBundle("messages.errors");
+        commonsBundle = ResourceBundle.getBundle("messages.commons");
     }
 
     public static String getMessage(String code, String bundleType) {
 
         bundleType = Objects.requireNonNullElse(bundleType, "validation");
+        ResourceBundle bundle = null;
 
-        ResourceBundle bundle = bundleType.equals("error") ? errorsBundle : validationsBundle;
+        if (bundleType.equals("common")) {
+            bundle = commonsBundle;
+        } else if (bundleType.equals("error")) {
+            bundle = errorsBundle;
+        } else {
+           bundle = validationsBundle;
+        }
 
         try {
 
@@ -97,10 +106,10 @@ public class Utils {
      *
      */
     public int guestUid() {
-        String ip = request.getRemoteAddr();
-        String ua = request.getHeader("User-Agent");
+        String ip = request.getRemoteAddr(); // ip주소
+        String ua = request.getHeader("User-Agent"); // 브라우저 정보
 
-        return Objects.hash(ip, ua);
+        return Objects.hash(ip, ua); // 유일한 값을 만들어서 비회원 처리 (주소가 같지만 브라우저 정보가 다를때는 다른 값으로 만들어짐)
     }
 
 }

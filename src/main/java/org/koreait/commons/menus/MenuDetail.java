@@ -1,4 +1,4 @@
-package org.koreait.commons;
+package org.koreait.commons.menus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,7 +3,6 @@ package org.koreait.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.koreait.commons.constants.MemberType;
-import org.koreait.models.member.MemberProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +45,9 @@ public class Member extends Base {
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<BoardData> items = new ArrayList<>();
 
-    @OneToOne
+    /*@OneToOne
     @JoinColumn(name = "profile_seq")
-    private MemberProfile profile;
+    private MemberProfile profile;*/
 
     /*@Column(updatable = false) // update 가능 여부
     @CreationTimestamp

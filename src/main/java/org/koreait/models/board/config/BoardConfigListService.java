@@ -2,7 +2,7 @@ package org.koreait.models.board.config;
 
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
-import org.koreait.controllers.admin.BoardSearch;
+import org.koreait.controllers.admins.BoardSearch;
 import org.koreait.entities.Board;
 import org.koreait.entities.QBoard;
 import org.koreait.repositories.BoardRepository;

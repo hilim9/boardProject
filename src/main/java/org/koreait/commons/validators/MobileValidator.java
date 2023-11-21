@@ -1,6 +1,6 @@
 package org.koreait.commons.validators;
 
-public interface MobileVlidator {
+public interface MobileValidator {
     default boolean mobileNumCheck(String mobile) {
         /**
          *

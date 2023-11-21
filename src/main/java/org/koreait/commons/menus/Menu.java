@@ -1,4 +1,4 @@
-package org.koreait.commons;
+package org.koreait.commons.menus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -9,14 +9,14 @@ import java.util.List;
  * 서브 메뉴 조회
  *
  */
-public class Menus {
+public class Menu {
 
     public static List<MenuDetail> gets(String code) {
         List<MenuDetail> menus = new ArrayList<>();
 
         // 게시판 하위 메뉴
         if (code.equals("board")) {
-            menus.add(new MenuDetail("board", "게시판 목록", "/admin/board"));
+            menus.add(new MenuDetail("board", "게시판 목록", "/admin/board")); // url: submenu 코드
             menus.add(new MenuDetail("register", "게시판 등록/수정", "/admin/board/register"));
             menus.add(new MenuDetail("posts", "게시글 관리", "/admin/board/posts"));
         }
@@ -27,6 +27,6 @@ public class Menus {
     public static String getSubMenuCode(HttpServletRequest request) {
         String URI = request.getRequestURI();
 
-        return URI.substring(URI.lastIndexOf('/') + 1);
+        return URI.substring(URI.lastIndexOf('/') + 1); //
     }
 }

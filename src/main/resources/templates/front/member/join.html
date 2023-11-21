@@ -4,38 +4,40 @@
       layout:decorate="~{front/layouts/main}">
 
 <main layout:fragment="content">
-    <form method="post" th:action="@{/member/join}" th:object="${joinForm}" autocomplete="off">
-        <div>
-            <input type="text" name="email" th:field="*{email}" th:placeholder="#{email}">
-            <div class="errors" th:each="err : ${#fields.errors('email')}" th:text="${err}"></div>
+    <form method="post" th:action="@{/member/join}" autocomplete="off" th:object="${requestJoin}">
+        <div class="rows">
+            <input type="text" name="email" th:placeholder="#{이메일}" th:field="*{email}">
+            <div class="error" th:each="err : ${#fields.errors('email')}" th:text="${err}"></div>
+        </div>
+        <div class="rows">
+            <input type="password" name="password" th:placeholder="#{비밀번호}" th:field="*{password}">
+            <div class="error" th:each="err : ${#fields.errors('password')}" th:text="${err}"></div>
+        </div>
+        <div class="rows">
+            <input type="password" name="confirmPassword" th:placeholder="#{비밀번호_확인}" th:field="*{confirmPassword}">
+            <div class="error" th:each="err : ${#fields.errors('confirmPassword')}" th:text="${err}"></div>
         </div>
 
-        <div>
-            <input type="password" name="pw" th:field="*{pw}" th:placeholder="#{pw}">
-            <div class="errors" th:each="err : ${#fields.errors('pw')}" th:text="${err}"></div>
+        <div class="rows">
+            <input type="text" name="userNm" th:placeholder="#{회원명}" th:field="*{userNm}">
+            <div class="error" th:each="err : ${#fields.errors('userNm')}" th:text="${err}"></div>
         </div>
 
-        <<div>
-            <input type="password" name="confirmPw" th:field="*{confirmPw}" th:placeholder="#{confirmPw}">
-            <div class="errors" th:each="err : ${#fields.errors('confirmPw')}" th:text="${err}"></div>
+        <div class="rows">
+            <input type="text" name="mobile" th:placeholder="#{휴대전화번호}" th:field="*{mobile}">
+            <div class="error" th:each="err : ${#fields.errors('mobile')}" th:text="${err}"></div>
         </div>
 
-        <div>
-            <input type="text" name="userNm" th:field="*{userNm}" th:placeholder="#{userNm}">
-            <div class="errors" th:each="err : ${#fields.errors('userNm')}" th:text="${err}"></div>
+        <div class="rows">
+            <!--<pre class="terms" th:text="${@siteConf.get('joinTerms')}"></pre>--> <!--회원 약관 추가 -->
+            <input type="checkbox" name="agree" value="true" id="agree" th:field="*{agree}">
+            <label for="agree" th:text="#{회원가입_약관에_동의합니다.}"></label> <!--공백은 인식이 안되기 때문에 _로 변경-->
+            <div class="error" th:each="err : ${#fields.errors('agree')}" th:text="${err}"></div>
         </div>
 
-        <div>
-            <input type="text" name="mobile" th:field="*{mobile}" th:placeholder="#{mobile}">
-            <div class="errors" th:each="err : ${#fields.errors('mobile')}" th:text="${err}"></div>
-        </div>
+        <button type="submit" th:text="#{회원가입}"></button>
 
-        <div>
-            <pre class="terms" th:text="${siteConfig.joinTerms}"></pre>
-            <input type="checkbox" name="agrees" value="true" id="agrees">
-            <label for="agrees" th:text="#{member.terms.agree}"></label>
-        </div>
-        <button type="submit" th:text="#{member.action.join}"></button>
     </form>
 </main>
+
 </html>

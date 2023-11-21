@@ -29,7 +29,6 @@ public class FileController {
 
     /**
      * 파일 업로드 처리 요청을 처리하는 메서드
-     *
      * @param files    업로드되는 파일들
      * @param gid      파일 그룹 식별자
      * @param location 파일이 위치하는 곳
@@ -39,16 +38,13 @@ public class FileController {
     public ResponseEntity<JSONData<List<FileInfo>>> uploadPs(MultipartFile[] files, String gid, String location) {
         List<FileInfo> items = uploadService.upload(files, gid, location);
 
-        JSONData<List<FileInfo>> data = new JSONData<>();
-        data.setSuccess(true);
-        data.setData(items);
+        JSONData<List<FileInfo>> data = new JSONData<>(items);
 
         return ResponseEntity.ok(data);
     }
 
     /**
      * 파일 다운로드 요청을 처리하는 메서드
-     *
      * @param id 다운로드할 파일의 고유 번호
      */
     @RequestMapping("/download/{id}")
@@ -56,11 +52,11 @@ public class FileController {
         downloadService.download(id);
     }
 
-/**
- * 파일 삭제 요청을 처리하는 메서드
- * @param id 삭제할 파일의 고유 번호
- * @return 삭제된 파일의 고유 번호를 담은 JSON 응답 데이터
- */
+    /**
+     * 파일 삭제 요청을 처리하는 메서드
+     * @param id 삭제할 파일의 고유 번호
+     * @return 삭제된 파일의 고유 번호를 담은 JSON 응답 데이터
+     */
     /*@RequestMapping("/delete/{id}")
     public ResponseEntity<JSONData<Long>> delete(Long id) {
         deleteService.delete(id);

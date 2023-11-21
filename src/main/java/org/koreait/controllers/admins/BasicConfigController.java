@@ -1,24 +1,23 @@
 package org.koreait.controllers.admins;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.koreait.commons.configs.ConfigInfoService;
 import org.koreait.commons.configs.ConfigSaveService;
+import org.koreait.controllers.admins.dtos.ConfigForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Log
-@Controller
+@Controller("adminBasicConfig")
 @RequestMapping("/admin/config")
 @RequiredArgsConstructor
-public class ConfigController {
-
+public class BasicConfigController {
     private final ConfigSaveService saveService;
     private final ConfigInfoService infoService;
-    private String code = "siteConfig";
+
+    private final String code = "config";
 
     @GetMapping
     public String config(Model model) {
@@ -26,7 +25,7 @@ public class ConfigController {
         ConfigForm configForm = infoService.get(code, ConfigForm.class);
 
         model.addAttribute("configForm", configForm == null ? new ConfigForm() : configForm);
-        return "admin/config";
+        return "admin/basic/index";
     }
 
     @PostMapping
@@ -37,14 +36,11 @@ public class ConfigController {
 
         model.addAttribute("message", "설정이 저장되었습니다.");
 
-        return "admin/config";
+        return "admin/basic/index";
     }
 
     private void commonProcess(Model model) {
-        String title = "사이트 설정";
-        String menuCode = "config";
-        model.addAttribute("pageTitle", title);
-        model.addAttribute("title", title);
-        model.addAttribute("menuCode", menuCode);
+        model.addAttribute("pageTitle", "사이트 설정");
+        model.addAttribute("menuCode", code);
     }
 }

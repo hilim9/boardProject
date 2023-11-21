@@ -15,7 +15,7 @@ public class BoardForm {
     private String mode; // -> update : 수정, 없으면 추가
 
     @NotBlank
-    private Long bId; // 게시판 ID
+    private String bId; // 게시판 ID
 
     @NotBlank
     private String bName; // 게시판명

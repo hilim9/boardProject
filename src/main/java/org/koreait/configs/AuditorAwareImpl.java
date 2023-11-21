@@ -21,7 +21,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         // 회원 일 때 - UserDetails 구현 객체
         if (auth != null && auth.getPrincipal() instanceof MemberInfo) {
             MemberInfo memberInfo = (MemberInfo) auth.getPrincipal();
-            email = memberInfo.getEmail();
+            email = memberInfo.getMember().getEmail();
         }
 
         return Optional.ofNullable(email);

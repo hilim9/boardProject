@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.koreait.configs.FileUploadConfig;
 import org.koreait.entities.FileInfo;
 import org.koreait.repositories.FileInfoRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,10 +20,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FileInfoService {
+    @Value("${file.upload.path}")
+    private String uploadPath; // 파일 업로드 경로
 
-    private final FileUploadConfig fileUpload; // 파일 업로드
-    private final FileInfoRepository repository; // 파일 정보 레포지토리
+    @Value("${file.upload.url}")
+    private String uploadUrl; // 파일 업로드 url
+
+
     private final HttpServletRequest request; // HTTP 요청 객체
+    private final FileInfoRepository repository; // 파일 정보 레포지토리
 
     /**
      * 파일 등록 번호로 개별 조회
@@ -34,7 +39,6 @@ public class FileInfoService {
     public FileInfo get(Long id) {
 
         FileInfo item = repository.findById(id).orElseThrow(FileNotFoundException::new);
-        // 파일이 없을 때 FileNotFoundException 발생
 
         addFileInfo(item);
 
@@ -47,11 +51,10 @@ public class FileInfoService {
      * @return 파일 정보 리스트
      */
     public List<FileInfo> getList(Options opts) {
-
-        // 파일 정보 레포지토리에서 옵션에 맞는 파일 정보들을 가져온다
+        // 파일 정보 레포지토리에서 옵션에 맞는 파일 정보들을 가져옴.
         List<FileInfo> items = repository.getFiles(opts.getGid(), opts.getLocation(), opts.getMode().name());
 
-        // 각 파일 정보에 추가 정보를 설정
+        // 각 파일 정보에 추가 정보를 설정.
         items.stream().forEach(this::addFileInfo);
 
         return items;
@@ -63,16 +66,14 @@ public class FileInfoService {
      * @param location 위치
      * @return 파일 정보 리스트
      */
-    public List<FileInfo> getListAll (String gid, String location) {
-
-        // 모든 그룹과 위치에 대한 파일 정보를 검색하기 위한 옵션을 생성
+    public List<FileInfo> getListAll(String gid, String location) {
+        // 모든 그룹과 위치에 대한 파일 정보를 검색하기 위한 옵션을 생성.
         Options opts = Options.builder()
                 .gid(gid)
                 .location(location)
                 .mode(SearchMode.ALL)
                 .build();
-
-        // getList 메서드를 사용하여 파일 정보 리스트를 검색하고 반환
+        // getList 메서드를 사용하여 파일 정보 리스트를 검색하고 반환.
         return getList(opts);
     }
 
@@ -82,11 +83,9 @@ public class FileInfoService {
      * @return 파일 정보 리스트
      */
     public List<FileInfo> getListAll(String gid) {
-
-        // 특정 그룹에 속한 모든 파일 정보를 검색하기 위한 옵션을 생성
+        // 특정 그룹에 속한 모든 파일 정보를 검색하기 위한 옵션을 생성.
         return getListAll(gid, null);
     }
-
 
     /**
      * 완료된 파일 정보를 검색합니다.
@@ -95,15 +94,13 @@ public class FileInfoService {
      * @return 파일 정보 리스트
      */
     public List<FileInfo> getListDone(String gid, String location) {
-
-        // 완료된 파일 정보를 검색하기 위한 옵션을 생성
+        // 완료된 파일 정보를 검색하기 위한 옵션을 생성.
         Options opts = Options.builder()
                 .gid(gid)
                 .location(location)
                 .mode(SearchMode.DONE)
                 .build();
-
-        // getList 메서드를 사용하여 완료된 파일 정보 리스트를 검색하고 반환
+        // getList 메서드를 사용하여 완료된 파일 정보 리스트를 검색하고 반환.
         return getList(opts);
     }
 
@@ -113,27 +110,25 @@ public class FileInfoService {
      * @return 파일 정보 리스트
      */
     public List<FileInfo> getListDone(String gid) {
-
-        // 특정 그룹에 속한 완료된 파일 정보를 검색하기 위한 옵션을 생성
+        // 특정 그룹에 속한 완료된 파일 정보를 검색하기 위한 옵션을 생성.
         return getListDone(gid, null);
     }
 
     /**
-    * - 파일 업로드 서버 경로(filePath)
-    * - 파일 서버 접속 URL (fileUrl)
-    * - 썸네일 경로(thumbsPath), 썸네일 URL(thumbsUrl)
-    *
-    * @param item
-    * */
+     * - 파일 업로드 서버 경로(filePath)
+     * - 파일 서버 접속 URL (fileUrl)
+     * - 썸네일 경로(thumbsPath), 썸네일 URL(thumbsUrl)
+     * 주어진 FileInfo 객체에 추가 정보를 설정
+     */
     public void addFileInfo(FileInfo item) {
-
         long id = item.getId();
         String extension = item.getExtension();
         String fileName = getFileName(id, extension);
+
         long folder = id % 10L;
 
         // 파일 업로드 서버 경로
-        String fileDir = fileUpload.getPath() + "/" + folder;
+        String fileDir = uploadPath + folder;
         String filePath = fileDir + "/" + fileName;
 
         File _fileDir = new File(fileDir);
@@ -141,8 +136,8 @@ public class FileInfoService {
             _fileDir.mkdir();
         }
 
-        // 파일 서버 접속 URL
-        String fileUrl = request.getContextPath() + fileUpload.getUrl() + folder + "/" + fileName;
+        // 파일 서버 접속 URL (fileUrl)
+        String fileUrl = request.getContextPath() + uploadUrl + folder + "/" + fileName;
 
         // 썸네일 경로(thumbsPath)
         String thumbPath = getUploadThumbPath() + folder;
@@ -151,28 +146,32 @@ public class FileInfoService {
             thumbDir.mkdirs();
         }
 
-        String[] thumbsPath = thumbDir.list((dir, name) -> name.indexOf("_" + fileName) != -1);
+        String[] thumbsPath = Arrays.stream(thumbDir.list((dir, name) -> name.indexOf("_" + fileName) != -1))
+                .map(n -> thumbPath + "/" + n).toArray(String[]::new);
+
 
         // 썸네일 URL(thumbsUrl)
         String[] thumbsUrl = Arrays.stream(thumbsPath)
-                .map(s -> s.replace(fileUpload.getPath(), request.getContextPath() + fileUpload.getUrl()))
-                .toArray(String[]::new);
+                .map(s -> s.replace(uploadPath, request.getContextPath() + uploadUrl)).toArray(String[]::new);
 
         item.setFilePath(filePath);
         item.setFileUrl(fileUrl);
         item.setThumbsPath(thumbsPath);
         item.setThumbsUrl(thumbsUrl);
-
     }
 
-    // 파일 업로드 썸네일 경로를 반환
+    /**
+     * 파일 업로드 썸네일 경로를 반환
+     */
     private String getUploadThumbPath() {
-        return fileUpload.getPath() + "thumbs/";
+        return uploadPath + "thumbs/";
     }
 
-    // 파일 업로드 썸네일 URL을 반환
+    /**
+     * 파일 업로드 썸네일 URL을 반환
+     */
     private String getUploadThumbUrl() {
-        return fileUpload.getUrl() + "thumbs/";
+        return uploadUrl + "thumbs/";
     }
 
     /**
@@ -212,8 +211,11 @@ public class FileInfoService {
     }
 
 
+
+
     //파일 정보 조회 옵션을 나타내는 내부 정적 클래스
-    @Data @Builder
+    @Data
+    @Builder
     static class Options {
         private String gid; // 파일의 그룹 식별자 (gid)
         private String location; // 파일 저장 위치
@@ -224,8 +226,9 @@ public class FileInfoService {
 
     //파일 검색 모드를 정의하는 enum
     static enum SearchMode {
-        ALL,
-        DONE,
-        UNDONE
+        ALL, // 모든 파일 검색
+        DONE, // 완료된 파일 검색
+        UNDONE // 미완료된 파일 검색
     }
+
 }

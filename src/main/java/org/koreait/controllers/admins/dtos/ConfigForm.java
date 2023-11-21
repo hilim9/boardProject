@@ -1,4 +1,4 @@
-package org.koreait.controllers.admins;
+package org.koreait.controllers.admins.dtos;
 
 import lombok.Data;
 

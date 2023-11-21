@@ -103,6 +103,4 @@ public class FileUploadService {
     public List<FileInfo> upload(MultipartFile[] files) {
         return upload(files, null);
     }
-
-
 }

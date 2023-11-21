@@ -50,6 +50,14 @@ public class BoardConfigInfoService {
      * @param board
      */
     private void accessCheck(Board board, String location) {
+
+        /**
+         * use - false : 모든 항목 접근 불가, 단 관리자만 가능
+         */
+        if (!board.isUse() && !memberUtil.isAdmin()) {
+            throw new BoardNotAllowAccessException();
+        }
+
         MemberType memberType = MemberType.ALL;
         if (location.equals("list")) { // 목록 접근 권한
             memberType = board.getListAccessRole();
@@ -59,6 +67,9 @@ public class BoardConfigInfoService {
 
         } else if (location.equals("write")) { // 글쓰기 권한
             memberType = board.getWriteAccessRole();
+
+            /** 비회원 게시글 여부 */
+            if (!memberUtil.isLogin()) board.setGuest(true);
 
         } else if (location.equals("reply")) { // 답글 권한
             memberType = board.getReplyAccessRole();
@@ -72,5 +83,7 @@ public class BoardConfigInfoService {
                 || (memberType == MemberType.ADMIN && !memberUtil.isAdmin())) {
             throw new BoardNotAllowAccessException();
         }
+
+
     }
 }

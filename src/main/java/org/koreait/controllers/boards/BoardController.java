@@ -1,4 +1,4 @@
-/*
+
 package org.koreait.controllers.boards;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,12 +7,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
 import org.koreait.commons.exceptions.CommonException;
-import org.koreait.controllers.admin.BoardForm;
 import org.koreait.entities.Board;
 import org.koreait.entities.BoardData;
 import org.koreait.entities.Member;
+import org.koreait.models.board.*;
 import org.koreait.models.board.config.BoardConfigInfoService;
-import org.koreait.models.board.config.BoardDataDeleteService;
 import org.koreait.models.board.config.BoardNotAllowAccessException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -42,13 +41,11 @@ public class BoardController {
 
     private Board board; // 게시판 설정
 
-    */
-/**
+    /**
      * 게시글 목록
      * @param bId
      * @return
-     *//*
-
+     */
     @GetMapping("/list/{bId}")
     public String list(@PathVariable String bId, Model model) {
         commonProcess(bId, "list", model);
@@ -56,32 +53,28 @@ public class BoardController {
         return "board/list";
     }
 
-    */
-/**
+    /**
      * 게시글 작성
      *
      * @param bId
      * @return
-     *//*
-
+     */
     @GetMapping("/write/{bId}")
     public String write(@PathVariable String bId, @ModelAttribute BoardForm boardForm, Model model) {
         commonProcess(bId, "write", model);
         boardForm.setBId(bId);
         if (memberUtil.isLogin()) {
-            boardForm.setPoster(memberUtil.getMember().getUserNm());
+            boardForm.setPoster(memberUtil.getMember().getUsername());
         }
 
         return "board/write";
     }
 
-    */
-/**
+    /**
      * 게시글 수정
      * @param id
      * @return
-     *//*
-
+     */
     @GetMapping("/{id}/update")
     public String update(@PathVariable Long id, Model model) {
         BoardData boardData = infoService.get(id, "update");
@@ -103,7 +96,7 @@ public class BoardController {
 
     @PostMapping("/save")
     public String save(@Valid BoardForm boardForm, Errors errors, Model model) {
-        Long id = boardForm.getId();
+        Long id = boardForm.getSeq();
         String mode = "write";
         if (id != null) {
             mode = "update";
@@ -135,7 +128,7 @@ public class BoardController {
         // 작성후 이동 설정 - 목록, 글보기
         String location = board.getLocationAfterWriting();
         String url = "redirect:/board/";
-        url += location.equals("view") ? "view/" + boardForm.getId() : "list/" + boardForm.getBId();
+        url += location.equals("view") ? "view/" + boardForm.getSeq() : "list/" + boardForm.getBId();
 
         return url;
     }
@@ -185,11 +178,9 @@ public class BoardController {
         session.setAttribute(mode + "_" + id, true);
 
         // 비회원 비밀번호 확인 후 이동 경로
-        */
-/**
+        /**
          String url = mode == "comment" ? "/board/" + id + "/comment" : "/board/" + id + "/update";
-         *//*
-
+         */
         String url = "/board/" + id + "/update";
         if (mode.equals("comment")) { // 댓글 삭제
             url = "/board/" + id + "/comment";
@@ -205,8 +196,7 @@ public class BoardController {
     }
 
     private void commonProcess(String bId, String action, Model model) {
-        */
-/**
+        /**
          * 1. bId 게시판 설정 조회
          * 2. action - write, update - 공통 스크립트, 공통 CSS
          *           - 에디터 사용 -> 에디터 스크립트 추가
@@ -217,8 +207,7 @@ public class BoardController {
          *                    - 비회원 - 비회원비밀번호
          *                    - 관리자는 다 가능
          *
-         *//*
-
+         */
 
         board = boardConfigInfoService.get(bId, action);
         List<String> addCss = new ArrayList<>();
@@ -233,6 +222,7 @@ public class BoardController {
             if (board.isUseEditor()) { // 에디터 사용 경우
                 addScript.add("ckeditor/ckeditor");
             }
+            addScript.add("fileManager");
             addScript.add("board/form");
         }
 
@@ -243,8 +233,7 @@ public class BoardController {
 
     }
 
-    */
-/**
+    /**
      * 수정, 삭제 권한 체크
      *
      * - 회원 : 작성한 회원
@@ -252,8 +241,7 @@ public class BoardController {
      * - 관리자 : 가능
      *
      * @param boardData
-     *//*
-
+     */
     public void updateDeletePossibleCheck(BoardData boardData, String mode) {
         mode = mode == null ? "board":mode;
         if (memberUtil.isAdmin()) { // 관리자는 무조건 가능
@@ -262,23 +250,21 @@ public class BoardController {
         Member member = boardData.getMember();
 
         if (member == null) { // 비회원일때는 비밀번호 검증이 되었는지 체크, 안되어 있다면 비밀번호 확인 페이지 이동
-            */
-/*
+            /*
              * 세션 키 - "board_게시글 번호" 가 있으면 비회원 비밀번호 검증 완료
-             *//*
-
-            if (session.getAttribute(mode+"_" + boardData.getId()) == null) {
+             */
+            if (session.getAttribute(mode+"_" + boardData.getSeq()) == null) {
                 // 1. 위치 - 게시글 : board, 삭제:  board_delete, 댓글 comment
                 // 2. 게시글 번호
                 session.setAttribute("guestPwMode", mode);
-                session.setAttribute("guestPwId", boardData.getId());
+                session.setAttribute("guestPwId", boardData.getSeq());
 
                 throw new GuestPasswordNotCheckedException(); // 비빌번호 확인 페이지 노출
             }
 
         } else { // 글을 작성한 회원쪽만 가능하게 통제
             if (memberUtil.isLogin()
-                    && memberUtil.getMember().getUserNo() != boardData.getMember().getUserNo()) {
+                    && Integer.parseInt(memberUtil.getMember().getEmail()) != boardData.getMember().getUserNo()) {
                 throw new BoardNotAllowAccessException();
             }
         }
@@ -314,4 +300,4 @@ public class BoardController {
         return "commons/execute_script";
     }
 }
-*/
+

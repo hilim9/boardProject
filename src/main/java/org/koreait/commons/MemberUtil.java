@@ -11,12 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MemberUtil {
-
     private final HttpSession session;
 
-    public boolean isLogin() { // 로그인 여부 조회
+    /**
+     * 로그인 여부 체크
+     * @return
+     *
+     * true면 로그인 false면 로그인 X
+     */
+    public boolean isLogin() {
 
-        return getMember() != null; // true면 로그인 false면 로그인X
+        return getMember() != null;
     }
 
     /**
@@ -25,9 +30,9 @@ public class MemberUtil {
      * @return 관리자 권한이 있는 경우 true, 아닌 경우 false를 반환.
      */
     public boolean isAdmin() {
-
-        return isLogin() && getMember().getMemberType() == MemberType.ADMIN;
+        return isLogin() && getMember().member.getMtype() == MemberType.ADMIN;
     }
+
 
     /**
      * 현재 로그인 중인 회원 정보를 가져옴.
@@ -54,5 +59,4 @@ public class MemberUtil {
 
         return null;
     }
-
 }

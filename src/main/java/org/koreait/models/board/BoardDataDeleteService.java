@@ -1,4 +1,4 @@
-package org.koreait.models.board.config;
+package org.koreait.models.board;
 
 import lombok.RequiredArgsConstructor;
 import org.koreait.entities.BoardData;

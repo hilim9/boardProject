@@ -1,6 +1,7 @@
 package org.koreait.configs;
 
 import org.koreait.commons.interceptors.CommonInterceptor;
+import org.koreait.commons.interceptors.SiteConfigInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
@@ -26,6 +27,9 @@ public class MvcConfig implements WebMvcConfigurer {
     @Autowired
     private CommonInterceptor commonInterceptor;
 
+    @Autowired
+    private SiteConfigInterceptor siteConfigInterceptor;
+
     /*@Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/")
@@ -42,6 +46,8 @@ public class MvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(commonInterceptor)
                 .addPathPatterns("/**");
+        registry.addInterceptor(siteConfigInterceptor)
+                .addPathPatterns("/**");
     }
 
     @Override
@@ -52,6 +58,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     }
 
+    @Bean
     public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
         return new HiddenHttpMethodFilter();
     }

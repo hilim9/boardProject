@@ -39,7 +39,7 @@ public class SiteConfigInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    public String get(String name) {
+    public String get(String name) { // null 값 처리 (NP 발생 방지)
         Map<String, String> siteConfig = (Map<String, String>)request.getAttribute("siteConfig");
         String value = siteConfig == null ? "" : siteConfig.get(name);
 

@@ -1,6 +1,7 @@
 package org.koreait.controllers.admins;
 
 import lombok.RequiredArgsConstructor;
+import org.koreait.commons.Utils;
 import org.koreait.commons.configs.ConfigInfoService;
 import org.koreait.commons.configs.ConfigSaveService;
 import org.koreait.controllers.admins.dtos.ConfigForm;
@@ -22,25 +23,25 @@ public class BasicConfigController {
     @GetMapping
     public String config(Model model) {
         commonProcess(model);
-        ConfigForm configForm = infoService.get(code, ConfigForm.class);
+        ConfigForm form = infoService.get(code, ConfigForm.class);
 
-        model.addAttribute("configForm", configForm == null ? new ConfigForm() : configForm);
+        model.addAttribute("configForm", form == null ? new ConfigForm() : form);
         return "admin/basic/index";
     }
 
     @PostMapping
-    public String configPs(ConfigForm configForm, Model model) {
+    public String configPs(ConfigForm form, Model model) {
         commonProcess(model);
 
-        saveService.save(code, configForm);
+        saveService.save(code, form);
 
-        model.addAttribute("message", "설정이 저장되었습니다.");
+        model.addAttribute("message", Utils.getMessage("저장되었습니다","commons"));
 
         return "admin/basic/index";
     }
 
     private void commonProcess(Model model) {
-        model.addAttribute("pageTitle", "사이트 설정");
+        model.addAttribute("pageTitle", Utils.getMessage("사이트_설정","commons"));
         model.addAttribute("menuCode", code);
     }
 }

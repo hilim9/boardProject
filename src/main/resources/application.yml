@@ -17,6 +17,8 @@ spring:
   jpa:
     properties:
       hibernate:
+        # 예약어 사용 가능
+        # globally_quoted_identifiers: true
         # 실행되는 쿼리 콘솔 출력
         show_sql: true
         # 콘솔 창에 출력되는 쿼리를 가독성 좋게 포매팅

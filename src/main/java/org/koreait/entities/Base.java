@@ -1,5 +1,6 @@
 package org.koreait.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -18,6 +19,7 @@ public abstract class Base {
 
     @CreatedDate // 엔티티가 생성되어 저장될 때 시간 자동 저장
     @Column(updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @LastModifiedDate // 조회한 엔티티의 값을 변경할 때 시간 자동 저장

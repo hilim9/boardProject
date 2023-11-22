@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
 import org.koreait.commons.exceptions.AuthorizationException;
 import org.koreait.entities.FileInfo;
-import org.koreait.entities.Member;
 import org.koreait.models.member.MemberInfo;
 import org.koreait.repositories.FileInfoRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Arrays;
+
 
 @Service
 @RequiredArgsConstructor

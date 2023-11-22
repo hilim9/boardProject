@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+@Controller("frontFileController")
 @RequestMapping("/file")
 @RequiredArgsConstructor
 public class FileController {

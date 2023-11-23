@@ -14,32 +14,27 @@
 
     <link rel="stylesheet" type="text/css" th:href="@{/common/css/style.css?v={v}(v=${@siteConf.get('cssJsVersion')})}">
     <link rel="stylesheet" type="text/css" th:each="file : ${addCommonCss}"
-          th:href="@{/common/css/{file}.css?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}">
+          th:href="@{/front/css/{file}.css?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}">
 
     <link rel="stylesheet" type="text/css" th:href="@{/admin/css/style.css?v={v}(v=${@siteConf.get('cssJsVersion')})}">
     <link rel="stylesheet" type="text/css" th:each="file : ${addCss}"
-          th:href="@{/admin/css/{file}.css?v={v}(file=${file}, v=${@siteConf.get('cssJsVersion')})}">
+          th:href="@{/front/css/{file}.css?v={v}(file=${file}, v=${@siteConf.get('cssJsVersion')})}">
 
     <th:block layout:fragment="addCss"></th:block>
 
     <script th:src="@{/common/js/common.js}"></script>
     <script th:each="file : ${addCommonScript}" th:src="@{/common/js/{file}.js?v={v}(file=${file}, v=${@siteConf.get('cssJsVersion')})}"></script>
 
-    <script th:src="@{/admin/js/common.js}"></script>
-    <script th:each="file : ${addScript}" th:src="@{/admin/js/{file}.js?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}"></script>
+    <script th:src="@{/front/js/common.js}"></script>
+    <script th:each="file : ${addScript}" th:src="@{/front/js/{file}.js?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}"></script>
 
     <th:block layout:fragment="addScript"></th:block>
 
 </head>
 <body>
-<header th:replace="~{admin/outlines/header::common}"></header>
-<main>
-    <aside th:replace="~{admin/outlines/_side::menu}"></aside>
-    <section>
-        <th:block th:replace="~{admin/commons/_submenu::menus}"></th:block>
-        <section layout:fragment="content"></section>
-    </section>
-</main>
+<header th:replace="~{front/outlines/header::common}"></header>
+<main layout:fragment="content"></main>
+<footer th:replace="~{front/outlines/footer::common}"></footer>
 <iframe name="ifrmProcess" class="dn"></iframe>
 </body>
 </html>

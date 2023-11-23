@@ -1,7 +1,6 @@
 package org.koreait.controllers.admins;
 
 import lombok.RequiredArgsConstructor;
-import org.koreait.commons.Utils;
 import org.koreait.commons.configs.ConfigInfoService;
 import org.koreait.commons.configs.ConfigSaveService;
 import org.koreait.controllers.admins.dtos.ConfigForm;
@@ -35,13 +34,16 @@ public class BasicConfigController {
 
         saveService.save(code, form);
 
-        model.addAttribute("message", Utils.getMessage("저장되었습니다","commons"));
+        model.addAttribute("message", "설정이 저장되었습니다.");
 
-        return "admin/basic/index";
+        return "redirect:/admin/board";
     }
 
     private void commonProcess(Model model) {
-        model.addAttribute("pageTitle", Utils.getMessage("사이트_설정","commons"));
-        model.addAttribute("menuCode", code);
+        String title = "사이트 설정";
+        String menuCode = "config";
+        model.addAttribute("pageTitle", title);
+        model.addAttribute("title", title);
+        model.addAttribute("menuCode", menuCode);
     }
 }

@@ -10,12 +10,12 @@
                 <th>검색어</th>
                 <td>
                     <div class="input_grp">
-                        <select name="sopt"><!--th:field="*{sopt}"-->
+                        <select name="sopt">
                             <option value="all">통합검색</option>
                             <option value="bId">게시판 ID</option>
                             <option value="bName">게시판명</option>
                         </select>
-                        <input type="text" name="skey" placeholder="검색어 입력"><!--th:field="*{skey}"-->
+                        <input type="text" name="skey" placeholder="검색어 입력">
                     </div>
                 </td>
             </tr>
@@ -50,7 +50,7 @@
                 <td align="center" th:text="*{bId}"></td>
                 <td align="center" th:text="*{bName}"></td>
                 <td>
-                    <a th:href="@{/admin/board/{bId}/update(bId=*{bId})}" class="sbtn">설정수정</a>
+                    <a th:href="@{/admin/board/update/{bId}(bId=*{bId})}" class="sbtn">설정수정</a>
                     <a th:href="@{/board/list/{bId}(bId=*{bId})}" class="sbtn">미리보기</a>
                     <a th:href="@{/board/write/{bId}(bId=*{bId})}" class="sbtn blue">글쓰기</a>
                 </td>

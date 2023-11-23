@@ -12,6 +12,7 @@ import org.koreait.models.board.config.BoardConfigInfoService;
 import org.koreait.models.board.config.BoardConfigListService;
 import org.koreait.models.board.config.BoardConfigSaveService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -32,8 +33,12 @@ public class BoardController implements ScriptExceptionProcess {
     
     // 게시판 목록
     @GetMapping
-    public String index(Model model) {
+    public String index(@ModelAttribute BoardSearch boardSearch, Model model) {
         commonProcess(model, "list");
+
+        Page<Board> data = boardConfigListService.gets(boardSearch);
+        model.addAttribute("items", data.getContent());
+
         return "admin/board/index";
     }
     

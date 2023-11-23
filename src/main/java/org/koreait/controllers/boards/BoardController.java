@@ -75,7 +75,7 @@ public class BoardController {
      * @param seq
      * @return
      */
-    @GetMapping("/{seq}/update")
+    @GetMapping("/update/{seq}")
     public String update(@PathVariable Long seq, Model model) {
         BoardData boardData = infoService.get(seq, "update");
         board = boardData.getBoard();
@@ -133,7 +133,7 @@ public class BoardController {
         return url;
     }
 
-    @GetMapping("/view/{id}")
+    @GetMapping("/view/{seq}")
     public String view(@PathVariable Long seq, Model model) {
         BoardData boardData = infoService.get(seq);
         board = boardData.getBoard();

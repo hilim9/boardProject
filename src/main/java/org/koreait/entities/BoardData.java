@@ -15,8 +15,10 @@ import java.util.UUID;
         @Index(name="idx_boarddata_createAt", columnList = "createdAt DESC")
 })
 public class BoardData extends Base {
+
     @Id @GeneratedValue
     private Long seq; // 게시글 번호
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="bId")
     private Board board;

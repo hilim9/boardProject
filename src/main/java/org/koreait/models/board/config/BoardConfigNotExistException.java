@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 
 public class BoardConfigNotExistException extends CommonException {
     public BoardConfigNotExistException() {
-        super(Utils.getMessage("Board.notExists","validations"), HttpStatus.BAD_REQUEST);
+        super(Utils.getMessage("Board.notExists","validations"), HttpStatus.NOT_FOUND);
     }
 }

@@ -38,9 +38,13 @@ public class BoardConfigSaveService {
         String mode = boardForm.getMode();
         if ((mode == null || !mode.equals("update")) && board.getBId() != null) { // 게시판 등록 -> 중복 여부 체크
             throw new DuplicateBoardConfigException();
+        } else {
+
+            board = new Board();
+            board.setBId(bId);
         }
 
-        board.setBId(bId);
+
         board.setBName(boardForm.getBName());
         board.setUse(boardForm.isUse());
         board.setRowsOfPage(boardForm.getRowsOfPage());

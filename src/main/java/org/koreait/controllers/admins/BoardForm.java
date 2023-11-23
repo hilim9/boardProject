@@ -14,10 +14,10 @@ public class BoardForm {
 
     private String mode; // -> update : 수정, 없으면 추가
 
-    @NotBlank
+    @NotBlank(message = "게시판 아이디를 입력하세요")
     private String bId; // 게시판 ID
 
-    @NotBlank
+    @NotBlank(message = "게시판 이름을 입력하세요")
     private String bName; // 게시판명
 
     private boolean use; // 사용 여부

@@ -33,7 +33,7 @@ public class BoardConfigSaveService {
          * 게시판 등록 모드인 경우는 중복 여부 체크
          *
          */
-        String bId = boardForm.getBId().toString();
+        String bId = boardForm.getBId();
         Board board = boardRepository.findById(bId).orElseGet(Board::new);
         String mode = boardForm.getMode();
         if ((mode == null || !mode.equals("update")) && board.getBId() != null) { // 게시판 등록 -> 중복 여부 체크

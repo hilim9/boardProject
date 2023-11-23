@@ -72,12 +72,12 @@ public class BoardController {
 
     /**
      * 게시글 수정
-     * @param id
+     * @param seq
      * @return
      */
-    @GetMapping("/{id}/update")
-    public String update(@PathVariable Long id, Model model) {
-        BoardData boardData = infoService.get(id, "update");
+    @GetMapping("/{seq}/update")
+    public String update(@PathVariable Long seq, Model model) {
+        BoardData boardData = infoService.get(seq, "update");
         board = boardData.getBoard();
         commonProcess(board.getBId(), "update", model);
 
@@ -96,11 +96,11 @@ public class BoardController {
 
     @PostMapping("/save")
     public String save(@Valid BoardForm boardForm, Errors errors, Model model) {
-        Long id = boardForm.getSeq();
+        Long seq = boardForm.getSeq();
         String mode = "write";
-        if (id != null) {
+        if (seq != null) {
             mode = "update";
-            BoardData boardData = infoService.get(id);
+            BoardData boardData = infoService.get(seq);
             board = boardData.getBoard();
             if (boardData.getMember() == null) {
                 board.setGuest(true);
@@ -134,8 +134,8 @@ public class BoardController {
     }
 
     @GetMapping("/view/{id}")
-    public String view(@PathVariable Long id, Model model) {
-        BoardData boardData = infoService.get(id);
+    public String view(@PathVariable Long seq, Model model) {
+        BoardData boardData = infoService.get(seq);
         board = boardData.getBoard();
 
         commonProcess(board.getBId(), "view", model);
@@ -143,14 +143,14 @@ public class BoardController {
         model.addAttribute("boardData", boardData);
         model.addAttribute("board", board);
 
-        updateHitService.update(id); // 게시글 조회수 업데이트
+        updateHitService.update(seq); // 게시글 조회수 업데이트
 
         return "board/view";
     }
 
-    @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id, Model model) {
-        BoardData boardData = infoService.get(id, "update");
+    @GetMapping("/delete/{seq}")
+    public String delete(@PathVariable Long seq, Model model) {
+        BoardData boardData = infoService.get(seq, "update");
         board = boardData.getBoard();
         String bid = board.getBId();
         commonProcess(bid, "update", model);
@@ -159,7 +159,7 @@ public class BoardController {
         updateDeletePossibleCheck(boardData, "board_delete");
 
         // 삭제 처리
-        deleteService.delete(id);
+        deleteService.delete(seq);
 
         // 삭제 완료시 게시글 목록으로 이동
         return "redirect:/board/list/" + bid;
@@ -169,23 +169,23 @@ public class BoardController {
     public String password(String password) {
 
         String mode = (String)session.getAttribute("guestPwMode");
-        Long id = (Long)session.getAttribute("guestPwId");
+        Long seq = (Long)session.getAttribute("guestPwId");
 
         // 비회원 비밀번호 검증
-        passwordCheckService.check(id, password, mode);
+        passwordCheckService.check(seq, password, mode);
 
         // 비회원 비밀번호 검증 완료 처리
-        session.setAttribute(mode + "_" + id, true);
+        session.setAttribute(mode + "_" + seq, true);
 
         // 비회원 비밀번호 확인 후 이동 경로
         /**
          String url = mode == "comment" ? "/board/" + id + "/comment" : "/board/" + id + "/update";
          */
-        String url = "/board/" + id + "/update";
+        String url = "/board/" + seq + "/update";
         if (mode.equals("comment")) { // 댓글 삭제
-            url = "/board/" + id + "/comment";
+            url = "/board/" + seq + "/comment";
         } else if (mode.equals("board_delete")) { // 글 삭제
-            url = "/board/delete/" + id;
+            url = "/board/delete/" + seq;
         }
 
         // 검증 완료 후 세션 제거
@@ -274,8 +274,8 @@ public class BoardController {
 
     }
 
-    public void updateDeletePossibleCheck(Long id) {
-        BoardData boardData = infoService.get(id, "update");
+    public void updateDeletePossibleCheck(Long seq) {
+        BoardData boardData = infoService.get(seq, "update");
         updateDeletePossibleCheck(boardData, null);
     }
 

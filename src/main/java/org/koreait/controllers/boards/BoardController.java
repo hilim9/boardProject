@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
+import org.koreait.commons.ScriptExceptionProcess;
+import org.koreait.commons.Utils;
 import org.koreait.commons.exceptions.CommonException;
 import org.koreait.entities.Board;
 import org.koreait.entities.BoardData;
@@ -26,7 +28,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/board")
 @RequiredArgsConstructor
-public class BoardController {
+public class BoardController implements ScriptExceptionProcess {
 
     private final BoardConfigInfoService boardConfigInfoService;
     private final BoardDataInfoService infoService;
@@ -38,6 +40,7 @@ public class BoardController {
     private final GuestPasswordCheckService passwordCheckService;
     private final BoardDataDeleteService deleteService;
     private final HttpSession session;
+    private final Utils utils;
 
     private Board board; // 게시판 설정
 
@@ -50,7 +53,7 @@ public class BoardController {
     public String list(@PathVariable String bId, Model model) {
         commonProcess(bId, "list", model);
 
-        return "board/list";
+        return utils.tpl("board/list");
     }
 
     /**
@@ -67,7 +70,7 @@ public class BoardController {
             boardForm.setPoster(memberUtil.getMember().getUsername());
         }
 
-        return "board/write";
+        return utils.tpl("board/write");
     }
 
     /**
@@ -91,7 +94,7 @@ public class BoardController {
 
         model.addAttribute("boardForm", boardForm);
 
-        return "board/update";
+        return utils.tpl("board/update");
     }
 
     @PostMapping("/save")

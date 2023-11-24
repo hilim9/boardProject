@@ -8,6 +8,8 @@ import org.koreait.repositories.BoardRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import java.util.Objects;
+
 /**
  * 게시판 설정 추가, 수정
  *

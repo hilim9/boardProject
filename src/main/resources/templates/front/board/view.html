@@ -2,11 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{front/layouts/main}">
-<main layout:fragment="content">
 
-    <th:block th:if="${board.skin == 'default'}"><th:block th:replace="~{board/skins/default/view::skin}"></th:block></th:block>
-
-    <th:block th:if="${board.skin == 'gallery'}"><th:block th:replace="~{board/skins/gallery/view::skin}"></th:block></th:block>
-
+<main layout:fragment="content" th:object="${boardData}">
+    <div class="subject" th:text="*{subject}"></div>
+    <div class="post_info">
+        <div class="date" th:text="*{#temporals.format(createdAt, 'yyyy.MM.dd HH:mm')}"></div>
+        <div class="poster" th:text="*{'작성자 : ' + poster}"></div>
+    </div>
+    <div class="content" th:utext="*{content}"></div>
 </main>
 </html>

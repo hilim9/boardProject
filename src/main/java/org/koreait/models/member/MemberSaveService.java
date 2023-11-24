@@ -2,8 +2,8 @@ package org.koreait.models.member;
 
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.constants.MemberType;
-import org.koreait.controllers.members.dtos.RequestJoin;
-import org.koreait.controllers.members.validators.JoinValidator;
+import org.koreait.controllers.members.JoinValidator;
+import org.koreait.controllers.members.RequestJoin;
 import org.koreait.entities.Member;
 import org.koreait.repositories.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;

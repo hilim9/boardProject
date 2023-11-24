@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.koreait.commons.exceptions.CommonException;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,9 +25,8 @@ public class CommonController {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         if (e instanceof CommonException) {
-            CommonException commonException = (CommonException) e;
+            CommonException commonException = (CommonException)e;
             status = commonException.getStatus();
-
         }
 
         response.setStatus(status.value());
@@ -40,12 +38,12 @@ public class CommonController {
         attrs.put("message", e.getMessage());
         attrs.put("timestamp", LocalDateTime.now().toString());
 
-        model.addAllAttributes(attrs); // map 형태로 입력
+        model.addAllAttributes(attrs);
 
         Writer writer = new StringWriter();
         PrintWriter pr = new PrintWriter(writer);
 
-        e.printStackTrace(pr); // 문자열로 변환해서 출력
+        e.printStackTrace(pr);
 
         String errorMessage = ((StringWriter)writer).toString();
         log.error(errorMessage);

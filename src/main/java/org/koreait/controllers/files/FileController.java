@@ -1,7 +1,7 @@
 package org.koreait.controllers.files;
 
 import lombok.RequiredArgsConstructor;
-import org.koreait.models.files.FileDeleteService;
+import org.koreait.models.file.FileDeleteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;

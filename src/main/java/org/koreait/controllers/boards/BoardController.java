@@ -1,4 +1,3 @@
-
 package org.koreait.controllers.boards;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,8 +11,8 @@ import org.koreait.commons.exceptions.CommonException;
 import org.koreait.entities.Board;
 import org.koreait.entities.BoardData;
 import org.koreait.entities.Member;
-import org.koreait.models.board.*;
-import org.koreait.models.board.config.BoardConfigInfoService;
+import org.koreait.models.board.BoardInfoService;
+import org.koreait.models.board.BoardSaveService;
 import org.koreait.models.board.config.BoardNotAllowAccessException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,62 +23,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Controller
+@Controller("Controller2")
 @RequestMapping("/board")
 @RequiredArgsConstructor
 public class BoardController implements ScriptExceptionProcess {
-
-    private final BoardConfigInfoService boardConfigInfoService;
-    private final BoardDataInfoService infoService;
-    private final BoardDataSaveService saveService;
-    private final BoardFormValidator formValidator;
-    private final HttpServletResponse response;
-    private final MemberUtil memberUtil;
-    private final UpdateHitService updateHitService;
-    private final GuestPasswordCheckService passwordCheckService;
-    private final BoardDataDeleteService deleteService;
-    private final HttpSession session;
     private final Utils utils;
+    private final MemberUtil memberUtil;
+    private final BoardSaveService saveService;
+    private final BoardInfoService infoService;
+    private final HttpServletResponse response;
 
-    private Board board; // 게시판 설정
+    private Board board;
 
-    /**
-     * 게시글 목록
-     * @param bId
-     * @return
-     */
-    @GetMapping("/list/{bId}")
-    public String list(@PathVariable String bId, Model model) {
-        commonProcess(bId, "list", model);
-
-        return utils.tpl("board/list");
-    }
-
-    /**
-     * 게시글 작성
-     *
-     * @param bId
-     * @return
-     */
     @GetMapping("/write/{bId}")
-    public String write(@PathVariable String bId, @ModelAttribute BoardForm boardForm, Model model) {
+    public String write(@PathVariable("bId") String bId, @ModelAttribute  BoardForm form, Model model) {
         commonProcess(bId, "write", model);
-        boardForm.setBId(bId);
-        if (memberUtil.isLogin()) {
-            boardForm.setPoster(memberUtil.getMember().getUsername());
-        }
 
         return utils.tpl("board/write");
     }
 
-    /**
-     * 게시글 수정
-     * @param seq
-     * @return
-     */
     @GetMapping("/update/{seq}")
-    public String update(@PathVariable Long seq, Model model) {
+    public String update(@PathVariable("seq") Long seq, Model model) {
+
         BoardData boardData = infoService.get(seq, "update");
         board = boardData.getBoard();
         commonProcess(board.getBId(), "update", model);
@@ -98,142 +65,56 @@ public class BoardController implements ScriptExceptionProcess {
     }
 
     @PostMapping("/save")
-    public String save(@Valid BoardForm boardForm, Errors errors, Model model) {
-        Long seq = boardForm.getSeq();
-        String mode = "write";
-        if (seq != null) {
-            mode = "update";
-            BoardData boardData = infoService.get(seq);
-            board = boardData.getBoard();
-            if (boardData.getMember() == null) {
-                board.setGuest(true);
-            } else {
-                boardForm.setUserNo(boardData.getMember().getUserNo());
-            }
+    public String save(@Valid BoardForm form, Errors errors, Model model) {
+        String mode = Objects.requireNonNullElse(form.getMode(), "write");
+        String bId = form.getBId();
 
-            updateDeletePossibleCheck(boardData);
-
-        }
-
-        commonProcess(boardForm.getBId(), mode, model);
-
-
-
-        formValidator.validate(boardForm, errors);
+        commonProcess(bId, mode, model);
 
         if (errors.hasErrors()) {
-            errors.getAllErrors().forEach(System.out::println);
-            return "board/" + mode;
+            return utils.tpl("board/" + mode);
         }
-        System.out.println(boardForm);
-        saveService.save(boardForm);
 
-        // 작성후 이동 설정 - 목록, 글보기
-        String location = board.getLocationAfterWriting();
-        String url = "redirect:/board/";
-        url += location.equals("view") ? "view/" + boardForm.getSeq() : "list/" + boardForm.getBId();
+        saveService.save(form);
 
-        return url;
+        return "redirect:/board/list/" + bId;
     }
 
     @GetMapping("/view/{seq}")
-    public String view(@PathVariable Long seq, Model model) {
-        BoardData boardData = infoService.get(seq);
-        board = boardData.getBoard();
+    public String view(@PathVariable("seq") Long seq, Model model) {
 
-        commonProcess(board.getBId(), "view", model);
+        BoardData data = infoService.get(seq);
 
-        model.addAttribute("boardData", boardData);
-        model.addAttribute("board", board);
+        model.addAttribute("boardData", data);
 
-        updateHitService.update(seq); // 게시글 조회수 업데이트
-
-        return "board/view";
+        return utils.tpl("board/view");
     }
 
     @GetMapping("/delete/{seq}")
-    public String delete(@PathVariable Long seq, Model model) {
-        BoardData boardData = infoService.get(seq, "update");
-        board = boardData.getBoard();
-        String bid = board.getBId();
-        commonProcess(bid, "update", model);
+    public String delete(@PathVariable Long seq) {
 
-        // 삭제 권한 체크
-        updateDeletePossibleCheck(boardData, "board_delete");
-
-        // 삭제 처리
-        deleteService.delete(seq);
-
-        // 삭제 완료시 게시글 목록으로 이동
-        return "redirect:/board/list/" + bid;
+        return "redirect:/board/list/게시판 ID";
     }
 
-    @PostMapping("/password")
-    public String password(String password) {
+    private void commonProcess(String bId, String mode, Model model) {
+        String pageTitle = "게시글 목록";
+        if (mode.equals("write")) pageTitle = "게시글 작성";
+        else if (mode.equals("update")) pageTitle = "게시글 수정";
+        else if (mode.equals("view")) pageTitle = "게시글 제목";
 
-        String mode = (String)session.getAttribute("guestPwMode");
-        Long seq = (Long)session.getAttribute("guestPwId");
-
-        // 비회원 비밀번호 검증
-        passwordCheckService.check(seq, password, mode);
-
-        // 비회원 비밀번호 검증 완료 처리
-        session.setAttribute(mode + "_" + seq, true);
-
-        // 비회원 비밀번호 확인 후 이동 경로
-        /**
-         String url = mode == "comment" ? "/board/" + id + "/comment" : "/board/" + id + "/update";
-         */
-        String url = "/board/" + seq + "/update";
-        if (mode.equals("comment")) { // 댓글 삭제
-            url = "/board/" + seq + "/comment";
-        } else if (mode.equals("board_delete")) { // 글 삭제
-            url = "/board/delete/" + seq;
-        }
-
-        // 검증 완료 후 세션 제거
-        session.removeAttribute("guestPwMode");
-        session.removeAttribute("guestPwId");
-
-        return "redirect:" + url;
-    }
-
-    private void commonProcess(String bId, String action, Model model) {
-        /**
-         * 1. bId 게시판 설정 조회
-         * 2. action - write, update - 공통 스크립트, 공통 CSS
-         *           - 에디터 사용 -> 에디터 스크립트 추가
-         *           - 에디터 미사용 -> 에디터 스크립트 미추가
-         *           - write, list, view -> 권한 체크
-         *           - update - 본인이 게시글만 수정 가능
-         *                    - 회원 - 회원번호
-         *                    - 비회원 - 비회원비밀번호
-         *                    - 관리자는 다 가능
-         *
-         */
-
-        board = boardConfigInfoService.get(bId, action);
-        List<String> addCss = new ArrayList<>();
+        List<String> addCommonScript = new ArrayList<>();
         List<String> addScript = new ArrayList<>();
 
-        // 공통 스타일 CSS
-        addCss.add("board/style");
-        addCss.add(String.format("board/%s_style", board.getSkin()));
+        if (mode.equals("write") || mode.equals("update")) {
+            addCommonScript.add("ckeditor/ckeditor");
+            addCommonScript.add("fileManager");
 
-        // 글 작성, 수정시 필요한 자바스크립트
-        if (action.equals("write") || action.equals("update")) {
-            if (board.isUseEditor()) { // 에디터 사용 경우
-                addScript.add("ckeditor/ckeditor");
-            }
-            addScript.add("fileManager");
             addScript.add("board/form");
         }
 
-        // 공통 필요 속성 추가
-        model.addAttribute("board", board); // 게시판 설정
-        model.addAttribute("addCss", addCss); // CSS 설정
-        model.addAttribute("addScript", addScript); // JS 설정
-
+        model.addAttribute("addCommonScript", addCommonScript);
+        model.addAttribute("addScript", addScript);
+        model.addAttribute("pageTitle", pageTitle);
     }
 
     /**
@@ -252,33 +133,16 @@ public class BoardController implements ScriptExceptionProcess {
         }
         Member member = boardData.getMember();
 
-        if (member == null) { // 비회원일때는 비밀번호 검증이 되었는지 체크, 안되어 있다면 비밀번호 확인 페이지 이동
-            /*
-             * 세션 키 - "board_게시글 번호" 가 있으면 비회원 비밀번호 검증 완료
-             */
-            if (session.getAttribute(mode+"_" + boardData.getSeq()) == null) {
-                // 1. 위치 - 게시글 : board, 삭제:  board_delete, 댓글 comment
-                // 2. 게시글 번호
-                session.setAttribute("guestPwMode", mode);
-                session.setAttribute("guestPwId", boardData.getSeq());
-
-                throw new GuestPasswordNotCheckedException(); // 비빌번호 확인 페이지 노출
-            }
-
-        } else { // 글을 작성한 회원쪽만 가능하게 통제
-            if (memberUtil.isLogin()
-                    && Integer.parseInt(memberUtil.getMember().getEmail()) != boardData.getMember().getUserNo()) {
-                throw new BoardNotAllowAccessException();
-            }
+        // 글을 작성한 회원쪽만 가능하게 통제
+        if (memberUtil.isLogin()
+                && Integer.parseInt(memberUtil.getMember().getEmail()) != boardData.getMember().getUserNo()) {
+            throw new BoardNotAllowAccessException();
         }
-
-
-
 
     }
 
     public void updateDeletePossibleCheck(Long seq) {
-        BoardData boardData = infoService.get(seq, "update");
+        BoardData boardData = infoService.get(seq);
         updateDeletePossibleCheck(boardData, null);
     }
 
@@ -294,13 +158,8 @@ public class BoardController implements ScriptExceptionProcess {
         HttpStatus status = e.getStatus();
         response.setStatus(status.value());
 
-        if (e instanceof GuestPasswordNotCheckedException) { // 비회원 비밀번호 검증 관련 예외
-            return "board/password";
-        }
-
         String script = String.format("alert('%s');history.back();", message);
         model.addAttribute("script", script);
         return "commons/execute_script";
     }
 }
-

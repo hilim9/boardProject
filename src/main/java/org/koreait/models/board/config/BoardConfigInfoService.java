@@ -55,9 +55,9 @@ public class BoardConfigInfoService {
         /**
          * use - false : 모든 항목 접근 불가, 단 관리자만 가능
          */
-        /*if (!board.isUse() && !memberUtil.isAdmin()) {
+        if (!board.isActive() && !memberUtil.isAdmin()) {
             throw new BoardNotAllowAccessException();
-        }*/
+        }
 
         MemberType memberType = MemberType.ALL;
         if (location.equals("list")) { // 목록 접근 권한
@@ -80,10 +80,10 @@ public class BoardConfigInfoService {
 
         }
 
-        /*if ((memberType == MemberType.USER && !memberUtil.isLogin())
+        if ((memberType == MemberType.USER && !memberUtil.isLogin())
                 || (memberType == MemberType.ADMIN && !memberUtil.isAdmin())) {
             throw new BoardNotAllowAccessException();
-        }*/
+        }
 
 
     }

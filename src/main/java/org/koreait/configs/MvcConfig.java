@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableJpaAuditing
-@EnableScheduling // 스케줄링 관리
+@EnableScheduling
 @EnableConfigurationProperties(FileUploadConfig.class)
 public class MvcConfig implements WebMvcConfigurer {
 
@@ -30,36 +30,26 @@ public class MvcConfig implements WebMvcConfigurer {
     @Autowired
     private SiteConfigInterceptor siteConfigInterceptor;
 
-    /*@Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/")
-                .setViewName("front/main/index");
-
-        registry.addViewController("/mypage")
-                .setViewName("front/main/index");
-
-        registry.addViewController("/admin")
-                .setViewName("front/main/index");
-    }*/
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(commonInterceptor)
                 .addPathPatterns("/**");
+
         registry.addInterceptor(siteConfigInterceptor)
                 .addPathPatterns("/**");
+
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        registry.addResourceHandler(fileUploadConfig.getUrl() + "**") // url을 포함한 모든 경로
-                .addResourceLocations("file:///" + fileUploadConfig.getPath());
-
+          registry.addResourceHandler(fileUploadConfig.getUrl() + "**")
+                  .addResourceLocations("file:///" + fileUploadConfig.getPath());
     }
 
     @Bean
     public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+
         return new HiddenHttpMethodFilter();
     }
 
@@ -67,7 +57,7 @@ public class MvcConfig implements WebMvcConfigurer {
     public MessageSource messageSource() {
         ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
         ms.setDefaultEncoding("UTF-8");
-        ms.addBasenames("messages.commons", "messages.validations","messages.errors");
+        ms.addBasenames("messages.commons", "messages.validations", "messages.errors");
 
         return ms;
     }

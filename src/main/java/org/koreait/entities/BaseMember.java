@@ -8,19 +8,16 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.stereotype.Component;
 
-@Getter @Setter
-@MappedSuperclass
+@MappedSuperclass @Getter @Setter
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseMember extends Base {
 
     @CreatedBy
-    @Column(length = 65, updatable = false)
+    @Column(length=65, updatable = false)
     private String createdBy;
 
     @LastModifiedBy
-    @Column(length = 65, insertable = false)
+    @Column(length=65, insertable = false)
     private String modifiedBy;
-
 }

@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * 예외를 자바스크립트로 처리하는 공통 인터페이스
+ * 예외를 자바스크립트 처리하는 공통 인터페이스
  *
  */
 public interface ScriptExceptionProcess {
@@ -22,6 +22,6 @@ public interface ScriptExceptionProcess {
 
         model.addAttribute("script", script);
 
-        return "commons/_execute_script";
+        return "common/_execute_script";
     }
 }

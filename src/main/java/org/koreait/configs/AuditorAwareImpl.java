@@ -14,14 +14,10 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
 
         String email = null;
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //Object principal = auth.getPrincipal();
-        // 비회원 일 때 - String(문자열로 출력) : anonymousUser
-        // 회원 일 때 - UserDetails 구현 객체
         if (auth != null && auth.getPrincipal() instanceof MemberInfo) {
-            MemberInfo memberInfo = (MemberInfo) auth.getPrincipal();
-            email = memberInfo.getMember().getEmail();
+            MemberInfo memberInfo = (MemberInfo)auth.getPrincipal();
+            email = memberInfo.getEmail();
         }
 
         return Optional.ofNullable(email);

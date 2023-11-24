@@ -12,43 +12,38 @@ import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
-public class ConfigInfoService { // 설정 조회 클래스
-
-
+public class ConfigInfoService {
 
     private final ConfigsRepository repository;
 
     public <T> T get(String code, Class<T> clazz) {
-
         return get(code, clazz, null);
     }
 
-    public <T> T get(String code, TypeReference<T> type) {
-        return get(code, null, type);
+    public <T> T get(String code, TypeReference<T> typeReference) {
+        return get(code, null, typeReference);
     }
 
     public <T> T get(String code, Class<T> clazz, TypeReference<T> typeReference) {
 
-            Configs configs = repository.findById(code).orElse(null);
-            if (configs == null || StringUtils.hasText(configs.getValue())) {
-                return null;
-            }
+        Configs config = repository.findById(code).orElse(null);
+        if (config == null || StringUtils.hasText(config.getValue())) {
+            return null;
+        }
 
-            String value = configs.getValue();
+        String json = config.getValue();
 
-            ObjectMapper om = new ObjectMapper();
-            om.registerModule(new JavaTimeModule());
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
 
-            try {
+        try {
+            T data = clazz == null ? om.readValue(json, typeReference) : om.readValue(json, clazz);
 
-                T data = clazz == null ? om.readValue(value, typeReference) : om.readValue(value, clazz);
+            return data;
 
-                return data;
-
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return null;
-            }
-
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

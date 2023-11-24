@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice("org.koreait.restcontrollers")
 public class CommonRestController {
 
-    @ExceptionHandler(Exception.class) // 공통적인 예외처리
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<JSONData<Object>> errorHandler(Exception e) {
-
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; // 500
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (e instanceof CommonException) {
             CommonException commonException = (CommonException) e;

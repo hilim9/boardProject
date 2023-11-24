@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface PasswordValidator {
-
     /**
      * 비밀번호 복잡성 체크 - 알파벳 체크
      *

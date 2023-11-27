@@ -1,7 +1,10 @@
 package org.koreait.models.board.config;
 
 import com.querydsl.core.BooleanBuilder;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.koreait.commons.ListData;
+import org.koreait.commons.Pagination;
 import org.koreait.controllers.admins.BoardSearch;
 import org.koreait.entities.Board;
 import org.koreait.entities.QBoard;
@@ -24,7 +27,9 @@ public class BoardConfigListService {
 
     private final BoardRepository boardRepository;
 
-    public Page<Board> gets(BoardSearch boardSearch) {
+    private final HttpServletRequest request;
+
+    public ListData<Board> gets(BoardSearch boardSearch) {
         QBoard board = QBoard.board;
 
         BooleanBuilder andBuilder = new BooleanBuilder();
@@ -53,11 +58,21 @@ public class BoardConfigListService {
                 andBuilder.and(board.bName.contains(skey));
             }
         }
-        /** 검색 조건 처리 E */
+        /** 검색 조건 처리 E
+         *
+         * 등록순으로 내림차순
+         * Sort.by(desc("createdAt"))
+         * */
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
         Page<Board> data = boardRepository.findAll(andBuilder, pageable);
 
-        return data;
+        Pagination pagination = new Pagination(page, (int)data.getTotalElements(), 10, limit, request);
+
+        ListData<Board> listData = new ListData<>();
+        listData.setContent(data.getContent());
+        listData.setPagination(pagination);
+
+        return listData;
     }
 }

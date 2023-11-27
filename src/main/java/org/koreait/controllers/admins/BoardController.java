@@ -3,7 +3,9 @@ package org.koreait.controllers.admins;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.koreait.commons.ListData;
 import org.koreait.commons.ScriptExceptionProcess;
+import org.koreait.commons.constants.BoardAuthority;
 import org.koreait.commons.menus.Menu;
 import org.koreait.controllers.boards.BoardForm;
 import org.koreait.entities.Board;
@@ -33,8 +35,10 @@ public class BoardController implements ScriptExceptionProcess {
     public String list(@ModelAttribute BoardSearch boardSearch, Model model) {
         commonProcess("list", model);
 
-        Page<Board> data = boardConfigListService.gets(boardSearch);
+        ListData<Board> data = boardConfigListService.gets(boardSearch);
+
         model.addAttribute("items", data.getContent());
+        model.addAttribute("pagination", data.getPagination());
 
         return "admin/board/list";
     }
@@ -47,7 +51,7 @@ public class BoardController implements ScriptExceptionProcess {
     }
 
     @GetMapping("/update/{bId}")
-    public String update(@PathVariable String bId, Model model) {
+    public String update(@PathVariable("bId") String bId, Model model) {
         commonProcess("update", model);
 
         Board board = boardConfigInfoService.get(bId, true);
@@ -84,5 +88,7 @@ public class BoardController implements ScriptExceptionProcess {
         model.addAttribute("menuCode", "board");
         model.addAttribute("submenus", Menu.gets("board"));
         model.addAttribute("subMenuCode", Menu.getSubMenuCode(request));
+
+        model.addAttribute("authorities", BoardAuthority.getList());
     }
 }

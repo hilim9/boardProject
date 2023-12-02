@@ -1,22 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{admin/layouts/main}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layouts/main}">
 <section layout:fragment="content">
-    <h1 th:text="${pageTitle}"></h1>
-    <form name="frmSearch" method="get" th:action="@{/admin/board}" autocomplete="off" th:object="${boardSearch}">
+    <h1>게시판 조회</h1>
+    <form name="frmSearch" method="get" th:action="@{/admin/board}" autocomplete="off">
         <table class="table-cols">
             <tr>
-                <th>검색어</th>
-                <td>
+                <th>키워드 검색</th>
+                <td colspan="3">
                     <div class="input_grp">
                         <select name="sopt">
-                            <option value="all">통합검색</option>
-                            <option value="bId">게시판 ID</option>
-                            <option value="bName">게시판명</option>
+                            <option value="ALL">통합검색</option>
+                            <option value="bId">게시판 아이디</option>
+                            <option value="bName">게시판 이름</option>
                         </select>
-                        <input type="text" name="skey" placeholder="검색어 입력">
+                        <input type="text" name="skey">
                     </div>
+                </td>
+            </tr>
+            <tr>
+                <th>사용여부</th>
+                <td>
+                    <span>
+                        <input type="checkbox" name="active" value="true" id="active_true">
+                        <label for="active_true">사용</label>
+                    </span>
+                    <span>
+                        <input type="checkbox" name="active" value="false" id="active_false">
+                        <label for="active_false">미사용</label>
+                    </span>
+                </td>
+                <th>글쓰기 권한</th>
+                <td>
+                    <span th:each="auth : ${authorities}">
+                        <input type="checkbox" name="authority" th:value="${auth[0]}" th:id="${'auth_' + auth[0]}">
+                        <label th:for="${'auth_' + auth[0]}" th:text="${auth[1]}"></label>
+                    </span>
                 </td>
             </tr>
         </table>
@@ -25,10 +45,9 @@
         </div>
     </form>
 
-    <h1>게시판 목록</h1>
-    <form name="frmList" method="post" th:action="@{/admin/board}" autocomplete="off" target="ifrmProcess">
-        <input type="hidden" name="_method" value="patch">
-
+    <h1 th:text="${pageTitle}"></h1>
+    <form name="frmList" method="post" th:action="@{/admin/board}" target="ifrmProcess" autocomplete="off">
+        <input type="hidden" name="_method" value="PATCH">
         <table class="table-rows">
             <thead>
             <tr>
@@ -36,12 +55,11 @@
                     <input type="checkbox" class="checkall" id="checkall" data-target-name="idx">
                     <label for="checkall"></label>
                 </th>
-                <th width="150">게시판 ID</th>
-                <th width="300">게시판명</th>
-                <th width="150">사용여부</th>
+                <th width="200">게시판 아이디</th>
+                <th width="300">게시판 이름</th>
+                <th width="150">사용 여부</th>
                 <th width="200">글쓰기 권한</th>
-                <th width="300">설정</th>
-                </th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -56,8 +74,10 @@
                            th:id="${'idx_' + status.index}">
                     <label th:for="${'idx_' + status.index}"></label>
                 </td>
-                <td align="center" th:text="*{bId}"></td>
-                <td align="center" th:text="*{bName}"></td>
+                <td th:text="*{bId}"></td>
+                <td>
+                    <input type="text" th:name="${'bName_' + status.index}" th:value="*{bName}">
+                </td>
                 <td>
                     <select th:name="${'active_' + status.index}">
                         <option value="true" th:selected="*{active}">사용</option>
@@ -66,22 +86,23 @@
                 </td>
                 <td>
                     <select th:name="${'authority_' + status.index}">
-                        <option th:if="${authorities != null && !authorities.isEmpty()}" th:each="auth : ${authorities}" th:value="${auth[0]}" th:text="${auth[1]}" th:selected="${auth[1] == item.authority.name()}"></option>
+
+                        <option th:if="${authorities != null && !authorities.isEmpty()}" th:each="auth : ${authorities}" th:value="${auth[0]}" th:text="${auth[1]}" th:selected="${auth[0] == item.authority.name()}"></option>
                     </select>
                 </td>
                 <td>
-                    <a th:href="@{/admin/board/update/{bId}(bId=*{bId})}" class="sbtn">설정수정</a>
-                    <a th:href="@{/board/list/{bId}(bId=*{bId})}" class="sbtn">미리보기</a>
-                    <a th:href="@{/board/write/{bId}(bId=*{bId})}" class="sbtn blue">글쓰기</a>
+                    <a th:href="@{/admin/board/edit/{bId}(bId=*{bId})}" class="sbtn">설정 수정</a>
+                    <a th:href="@{/board/list/{bId}(bId=*{bId})}" target="_blank" class="sbtn blue">미리보기</a>
                 </td>
             </tr>
             </tbody>
         </table>
         <div class="table-action">
-            <button type="button" class="sbtn form-action" data-mode="update" data-from-name="frmList">선택 게시판 수정</button>
-            <button type="button" class="sbtn blue form-action" data-mode="delete" data-from-name="frmList">선택 게시판 삭제</button>
+            <button type="button" class="sbtn blue form-action" data-mode="update" data-form-name="frmList">선택 게시판 수정</button>
+            <button type="button" class="sbtn form-action" data-mode="delete" data-form-name="frmList">선택 게시판 삭제</button>
         </div>
     </form>
+
     <th:block th:if="${items != null && !items.isEmpty()}" th:replace="~{common/_pagination::pagination}"></th:block>
 </section>
 </html>

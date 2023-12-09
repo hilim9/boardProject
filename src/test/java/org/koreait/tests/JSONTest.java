@@ -20,25 +20,24 @@ public class JSONTest {
 
     @BeforeEach
     void init() {
-
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
     }
 
     @Test
     void test1() throws JsonProcessingException {
-        Member member = Member.builder()
-                .email("user01@test.org")
-                .password("12345678")
-                .userNm("사용자01")
-                .build();
-        member.setCreatedAt(LocalDateTime.now());
+       Member member = Member.builder()
+               .email("user01@test.org")
+               .password("12345678")
+               .userNm("사용자01")
+               .build();
+       member.setCreatedAt(LocalDateTime.now());
 
-        String json = om.writeValueAsString(member);
-        System.out.println(json);
+       String json = om.writeValueAsString(member);
+       System.out.println(json);
 
         Member member2 = om.readValue(json, Member.class);
-        System.out.println("member2: " + member2);
+        System.out.println(member2);
     }
 
     @Test
@@ -56,8 +55,7 @@ public class JSONTest {
 
         String json = om.writeValueAsString(members);
         System.out.println(json);
-        
-        // JSON 형식에서 변환
+
         List<Member> members2 = om.readValue(json, new TypeReference<List<Member>>() {});
 
         members2.stream().forEach(System.out::println);

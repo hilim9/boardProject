@@ -29,9 +29,9 @@
         </div>
 
         <div class="rows">
-            <!--<pre class="terms" th:text="${@siteConf.get('joinTerms')}"></pre>--> <!--회원 약관 추가 -->
+
             <input type="checkbox" name="agree" value="true" id="agree" th:field="*{agree}">
-            <label for="agree" th:text="#{회원가입_약관에_동의합니다}"></label> <!--공백은 인식이 안되기 때문에 _로 변경-->
+            <label for="agree" th:text="#{회원가입_약관에_동의합니다}"></label>
             <div class="error" th:each="err : ${#fields.errors('agree')}" th:text="${err}"></div>
         </div>
 

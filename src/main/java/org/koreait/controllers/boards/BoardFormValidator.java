@@ -2,39 +2,46 @@ package org.koreait.controllers.boards;
 
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.MemberUtil;
+import org.koreait.commons.validators.PasswordValidator;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Component
 @RequiredArgsConstructor
-public class BoardFormValidator implements Validator {
+public class BoardFormValidator implements Validator, PasswordValidator {
 
     private final MemberUtil memberUtil;
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return BoardForm.class.isAssignableFrom(clazz);
+        return clazz.isAssignableFrom(BoardForm.class);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        BoardForm boardForm = (BoardForm)target;
-        /** 비회원 비밀번호 체크 S */
-        Long seq = boardForm.getSeq();
-        Long userNo = boardForm.getUserNo();
+        BoardForm form = (BoardForm) target;
 
-        if ((seq == null && !memberUtil.isLogin()) // 글 작성시 비회원
-                || (seq != null && userNo == null)) { // 글 수정시 비회원
-            String guestPw = boardForm.getGuestPw();
-            if (guestPw == null || guestPw.isBlank()) {
-                errors.rejectValue("guestPw", "NotBlank");
-            }
+        if (!memberUtil.isLogin()) { // 미 로그인 상태 -> 비회원 비밀번호 필수
+            String guestPw = form.getGuestPw();
 
-            if (guestPw != null && guestPw.length() < 6) {
-                errors.rejectValue("guestPw", "Size");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "guestPw", "NotBlank");
+
+            if (StringUtils.hasText(guestPw)) {
+                // 비회원 비밀번호는 1자리 이상 알파벳, 숫자 필수
+                if (!alphaCheck(guestPw, true) || !numberCheck(guestPw)) {
+                    errors.rejectValue("guestPw", "Complexity");
+                }
+
+                // 비회원 비밀번호는 4자리 이상
+                if (guestPw.length() < 4) {
+                    errors.rejectValue("gusetPw", "Size");
+                }
             }
         }
-        /** 비회원 비밀번호 체크 E */
+
+
     }
 }

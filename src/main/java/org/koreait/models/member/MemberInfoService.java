@@ -24,12 +24,14 @@ public class MemberInfoService implements UserDetailsService {
 
         Member member = repository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
-        List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(member.getMtype().name()));
+        List<GrantedAuthority> authorities
+                = Arrays.asList(new SimpleGrantedAuthority(member.getMtype().name()));
+
 
         return MemberInfo.builder()
-                .authorities(authorities)
                 .email(member.getEmail())
                 .password(member.getPassword())
+                .authorities(authorities)
                 .member(member)
                 .build();
     }

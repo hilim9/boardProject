@@ -1,26 +1,20 @@
 package org.koreait.controllers.members;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.koreait.commons.CommonProcess;
 import org.koreait.commons.Utils;
-import org.koreait.controllers.members.dtos.RequestJoin;
 import org.koreait.models.member.MemberSaveService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
-@Transactional
 public class MemberController implements CommonProcess {
 
     private final Utils utils;
@@ -29,7 +23,7 @@ public class MemberController implements CommonProcess {
     @GetMapping("/join")
     public String join(@ModelAttribute RequestJoin form, Model model) {
         commonProcess(model, Utils.getMessage("회원가입", "common"));
-
+        
         return utils.tpl("member/join");
     }
 
@@ -39,18 +33,17 @@ public class MemberController implements CommonProcess {
 
         saveService.join(form, errors);
 
-        if (errors.hasErrors()) { // 회원가입 실패시
+        if (errors.hasErrors()) {
             return utils.tpl("member/join");
         }
 
-        // 회원가입 성공시
         return "redirect:/member/login";
     }
 
     @GetMapping("/login")
-    public String login(String redirectURL, Model model) {
+    public String login(@RequestParam(name= "redirectURL", required = false) String redirectURL, Model model) {
         commonProcess(model, Utils.getMessage("로그인", "common"));
-
+        
         model.addAttribute("redirectURL", redirectURL);
 
         return utils.tpl("member/login");

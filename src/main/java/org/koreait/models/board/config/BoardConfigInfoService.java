@@ -1,90 +1,133 @@
 package org.koreait.models.board.config;
 
+import com.querydsl.core.BooleanBuilder;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.koreait.commons.ListData;
 import org.koreait.commons.MemberUtil;
-import org.koreait.commons.constants.MemberType;
+import org.koreait.commons.Pagination;
+import org.koreait.commons.Utils;
+import org.koreait.commons.constants.BoardAuthority;
+import org.koreait.commons.exceptions.AuthorizationException;
+import org.koreait.controllers.admins.BoardConfigForm;
+import org.koreait.controllers.admins.BoardSearch;
 import org.koreait.entities.Board;
+import org.koreait.entities.QBoard;
 import org.koreait.repositories.BoardRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.Objects;
+
+import static org.springframework.data.domain.Sort.Order.desc;
 
 @Service
 @RequiredArgsConstructor
 public class BoardConfigInfoService {
 
-    private final BoardRepository boardRepository;
+    private final BoardRepository repository;
+    private final HttpServletRequest request;
     private final MemberUtil memberUtil;
 
-    public Board get(String bId, String location) { // 프론트, 접근 권한 체크
+    public Board get(String bId) {
+        Board data = repository.findById(bId).orElseThrow(BoardNotFoundException::new);
 
-        return get(bId, false, location);
+        return data;
     }
 
-    /**
-     * 게시판 설정 조회
-     *
-     * @param bId
-     * @param isAdmin : true - 권한 체크 X
-     *                : false - 권한 체크, location으로 목록, 보기, 글쓰기, 답글, 댓글
-     *
-     * @param location : 기능 위치(list, view, write, reply, comment)
-     *
-     * @return
-     */
-    public Board get(String bId, boolean isAdmin, String location) {
-
-        Board board = boardRepository.findById(bId).orElseThrow(BoardConfigNotExistException::new);
-
-        if (!isAdmin) { // 권한 체크
-            accessCheck(board, location);
+    public Board get(String bId, boolean checkAuthority) {
+        Board data = get(bId);
+        if (!checkAuthority) { // false 이면 체크 안함
+            return data;
         }
 
-        return board;
-    }
+        // 글쓰기 권한 체크
+        BoardAuthority authority = data.getAuthority();
+        if (authority != BoardAuthority.ALL) {
+            if(!memberUtil.isLogin()) {
+                throw new AuthorizationException();
+            }
 
-    public Board get(String bId, boolean isAdmin) {
-        return get(bId, isAdmin, null);
-    }
-
-    /**
-     * 접근 권한 체크
-     *
-     * @param board
-     */
-    private void accessCheck(Board board, String location) {
-
-        /**
-         * use - false : 모든 항목 접근 불가, 단 관리자만 가능
-         */
-        /*if (!board.isUse() && !memberUtil.isAdmin()) {
-            throw new BoardNotAllowAccessException();
-        }*/
-
-        MemberType memberType = MemberType.ALL;
-        if (location.equals("list")) { // 목록 접근 권한
-            memberType = board.getListAccessRole();
-
-        } else if (location.equals("view")) { // 게시글 접근 권한
-            memberType = board.getViewAccessRole();
-
-        } else if (location.equals("write")) { // 글쓰기 권한
-            memberType = board.getWriteAccessRole();
-
-            /** 비회원 게시글 여부 */
-            if (!memberUtil.isLogin()) board.setGuest(true);
-
-        } else if (location.equals("reply")) { // 답글 권한
-            memberType = board.getReplyAccessRole();
-
-        } else if (location.equals("comment")) { // 댓글 권한
-            memberType = board.getCommentAccessRole();
-
+            if (authority == BoardAuthority.ADMIN) {
+                throw new AuthorizationException();
+            }
         }
 
-        /*if ((memberType == MemberType.USER && !memberUtil.isLogin())
-                || (memberType == MemberType.ADMIN && !memberUtil.isAdmin())) {
-            throw new BoardNotAllowAccessException();
-        }*/
+        return data;
+    }
+
+    public BoardConfigForm getForm(String bId) {
+        Board board = get(bId);
+
+        BoardConfigForm form = new ModelMapper().map(board, BoardConfigForm.class);
+        form.setAuthority(board.getAuthority().name());
+        form.setMode("edit");
+
+        return form;
+    }
+
+    public ListData<Board> getList(BoardSearch search) {
+        BooleanBuilder andBuilder = new BooleanBuilder();
+
+        int page = Utils.getNumber(search.getPage(), 1);
+        int limit = Utils.getNumber(search.getLimit(), 20);
+
+        /* 검색 처리 S */
+        QBoard board = QBoard.board;
+
+        // 키워드 검색
+        String sopt = Objects.requireNonNullElse(search.getSopt(), "ALL");
+        String skey = search.getSkey();
+        if (StringUtils.hasText(skey)) {
+            skey = skey.trim();
+
+            if (sopt.equals("bId")) { // 게시판 아이디
+                andBuilder.and(board.bId.contains(skey));
+            } else if (sopt.equals("bName")) { // 게시판 이름
+                andBuilder.and(board.bName.contains(skey));
+            } else { // 통합 검색
+                BooleanBuilder orBuilder = new BooleanBuilder();
+                orBuilder.or(board.bId.contains(skey))
+                        .or(board.bName.contains(skey));
+
+                andBuilder.and(orBuilder);
+            }
+        }
+
+        // 사용여부
+        List<Boolean> active = search.getActive();
+        if (active != null && !active.isEmpty()) {
+            andBuilder.and(board.active.in(active));
+        }
+
+        // 글쓰기 권한
+        List<BoardAuthority> authorities = search.getAuthority() == null ? null : search.getAuthority().stream().map(BoardAuthority::valueOf).toList();
+        if (authorities != null && !authorities.isEmpty()) {
+            andBuilder.and(board.authority.in(authorities));
+        }
+
+        /* 검색 처리 E */
 
 
+        // Sort.Order.desc("엔티티 속성명"), Sort.Order.asc("엔티티 속성명")
+
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("createdAt")));
+
+        Page<Board> data = repository.findAll(andBuilder, pageable);
+
+
+        Pagination pagination = new Pagination(page, (int)data.getTotalElements(), 10, limit, request);
+
+        ListData<Board> listData = new ListData<>();
+        listData.setContent(data.getContent());
+        listData.setPagination(pagination);
+
+        return listData;
     }
 }

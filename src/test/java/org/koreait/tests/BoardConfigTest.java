@@ -1,6 +1,6 @@
 package org.koreait.tests;
 
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.koreait.entities.Board;
@@ -13,45 +13,44 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.Charset;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@TestPropertySource(properties = "spring.profiles.active=test")
 @AutoConfigureMockMvc
-@DisplayName("통합테스트")
+@TestPropertySource(properties = "spring.profiles.active=test")
 public class BoardConfigTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private BoardRepository boardRepository;
-    
+
     @Test
     @DisplayName("게시판 설정 저장 테스트 - 유효성 검사")
     void boardConfigTest() throws Exception {
         String body = mockMvc.perform(
-                post("/admin/board/save")
-                        .with(csrf())
+                    post("/admin/board/save")
+                            .with(csrf())
                 )
                 .andDo(print())
-                .andExpect(status().isOk()) // 200 코드
-                .andReturn().getResponse().getContentAsString(Charset.forName("UTF-8"));
+                .andExpect(status().isOk())
+                .andReturn().getResponse()
+                .getContentAsString(Charset.forName("UTF-8"));
 
         assertTrue(body.contains("게시판 아이디"));
         assertTrue(body.contains("게시판 이름"));
-
     }
 
     @Test
-    @DisplayName("게시판 설정 저장 테스트 - 성공시 200")
+    @DisplayName("게시판 설정 저장 테스트 - 성공시 302")
     void boardConfigTest2() throws Exception {
-
         mockMvc.perform(post("/admin/board/save")
                 .param("bId", "notice")
                 .param("bName", "공지사항")
@@ -65,7 +64,5 @@ public class BoardConfigTest {
         assertNotNull(board);
 
         assertTrue(board.getBName().contains("공지사항"));
-
     }
-    
 }

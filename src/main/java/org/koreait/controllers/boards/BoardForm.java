@@ -1,36 +1,37 @@
 package org.koreait.controllers.boards;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.koreait.entities.FileInfo;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class BoardForm {
-    private Long seq; // 게시글 번호
+    private String mode = "write";
+    private Long seq;
 
-    @NotBlank
     private String bId;
 
-    @NotBlank
     private String gid = UUID.randomUUID().toString();
 
-    @NotBlank(message = "작성자를 입력하세요")
-    private String poster; // 작성자
+    private String category;
+
+    @NotBlank
+    private String subject;
+
+    @NotBlank
+    private String poster;
+
+    @NotBlank
+    private String content;
+
+    private boolean notice; // 공지사항 여부
+
     private String guestPw; // 비회원 비밀번호
-    private String category; // 게시판 분류
 
-    @NotBlank(message = "제목을 입력하세요")
-    private String subject; // 제목
+    private List<FileInfo> editorImages;
 
-    @NotBlank(message = "내용을 입력하세요")
-    private String content; // 내용
-
-    private Long userNo; // 회원번호
+    private List<FileInfo> attachFiles;
 }

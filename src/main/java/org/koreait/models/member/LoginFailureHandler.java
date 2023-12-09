@@ -16,11 +16,11 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 
         HttpSession session = request.getSession();
 
+        Utils.loginInit(session);
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        Utils.loginInit(session);
-        
         boolean isRequiredFieldCheck = false;
 
         session.setAttribute("email", email);
@@ -28,24 +28,19 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         /* 필수 항목 검증 - email, password S */
         if (email == null || email.isBlank()) {
             session.setAttribute("NotBlank_email", Utils.getMessage("NotBlank.email", "validation"));
-
             isRequiredFieldCheck = true;
         }
 
         if (password == null || password.isBlank()) {
             session.setAttribute("NotBlank_password", Utils.getMessage("NotBlank.password", "validation"));
-
             isRequiredFieldCheck = true;
         }
-
         /* 필수 항목 검증 - email, password E */
 
-        if (!isRequiredFieldCheck) { // 아이디,비밀번호가 없거나 잘못된 경우
-            session.setAttribute("globalError",Utils.getMessage("Login.fail", "validation"));
+        if (!isRequiredFieldCheck) { // 아이디가 없거나 비밀번호가 잘못된 경우
+            session.setAttribute("globalError", Utils.getMessage("Login.fail", "validation"));
         }
-        
-        // 실패시 이동할 페이지
+
         response.sendRedirect(request.getContextPath() + "/member/login");
     }
-
 }

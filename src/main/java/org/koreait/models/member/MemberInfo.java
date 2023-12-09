@@ -8,38 +8,32 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-/**
- * 회원 정보를 담는 클래스입니다. Spring Security의 UserDetails 인터페이스를 구현하여 사용자 정보와 권한 정보를 제공
- */
 @Data @Builder
 public class MemberInfo implements UserDetails {
-
     private String email;
     private String password;
-    public Member member;
+
+    private Member member;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-
-    /* 필수 설정 항목 S */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { // 권한 (인가 통제)
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
     @Override
-    public String getPassword() { // 로그인 관련
+    public String getPassword() {
         return password;
     }
 
     @Override
-    public String getUsername() { // 로그인 관련
+    public String getUsername() {
         return email;
     }
 
-    /* 필수 설정 항목 E */
-
     @Override
-    public boolean isAccountNonExpired() { 
+    public boolean isAccountNonExpired() {
         return true;
     }
 
@@ -49,12 +43,12 @@ public class MemberInfo implements UserDetails {
     }
 
     @Override
-    public boolean isCredentialsNonExpired() { // 비번 사용기한 관련
+    public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
-    public boolean isEnabled() { // 회원 존재 여부
+    public boolean isEnabled() {
         return true;
     }
 }

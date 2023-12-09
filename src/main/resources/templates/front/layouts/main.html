@@ -14,11 +14,12 @@
 
     <link rel="stylesheet" type="text/css" th:href="@{/common/css/style.css?v={v}(v=${@siteConf.get('cssJsVersion')})}">
     <link rel="stylesheet" type="text/css" th:each="file : ${addCommonCss}"
-          th:href="@{/front/css/{file}.css?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}">
+          th:href="@{/common/css/{file}.css?v={v}(file=${file},v=${@siteConf.get('cssJsVersion')})}">
 
     <link rel="stylesheet" type="text/css" th:href="@{/front/css/style.css?v={v}(v=${@siteConf.get('cssJsVersion')})}">
     <link rel="stylesheet" type="text/css" th:each="file : ${addCss}"
           th:href="@{/front/css/{file}.css?v={v}(file=${file}, v=${@siteConf.get('cssJsVersion')})}">
+
 
     <th:block layout:fragment="addCss"></th:block>
 

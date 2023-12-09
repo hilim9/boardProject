@@ -41,9 +41,9 @@ spring:
       staticLocations: file:src/main/resources/static/
 
   # 라이브 리로드 설정 제거
-#  devtools:
-#    livereload:
-#      enabled: true
+  #  devtools:
+  #    livereload:
+  #      enabled: true
 
   # 타임리프 설정
   thymeleaf:

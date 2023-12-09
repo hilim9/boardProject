@@ -3,16 +3,14 @@ package org.koreait.controllers.admins;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.koreait.commons.ListData;
 import org.koreait.commons.ScriptExceptionProcess;
-import org.koreait.commons.exceptions.CommonException;
+import org.koreait.commons.constants.BoardAuthority;
 import org.koreait.commons.menus.Menu;
-import org.koreait.commons.menus.MenuDetail;
 import org.koreait.entities.Board;
+import org.koreait.models.board.config.BoardConfigDeleteService;
 import org.koreait.models.board.config.BoardConfigInfoService;
-import org.koreait.models.board.config.BoardConfigListService;
 import org.koreait.models.board.config.BoardConfigSaveService;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -26,92 +24,88 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class BoardController implements ScriptExceptionProcess {
 
-    private final BoardConfigSaveService configSaveService;
-    private final BoardConfigInfoService boardConfigInfoService;
-    private final BoardConfigListService boardConfigListService;
     private final HttpServletRequest request;
-    
-    // 게시판 목록
+    private final BoardConfigSaveService saveService;
+    private final BoardConfigInfoService infoService;
+    private final BoardConfigDeleteService deleteService;
+
     @GetMapping
-    public String index(@ModelAttribute BoardSearch boardSearch, Model model) {
-        commonProcess(model, "list");
+    public String list(@ModelAttribute BoardSearch search, Model model) {
+        commonProcess("list", model);
 
-        Page<Board> data = boardConfigListService.gets(boardSearch);
+        ListData<Board> data = infoService.getList(search);
+
         model.addAttribute("items", data.getContent());
+        model.addAttribute("pagination", data.getPagination());
 
-        return "admin/board/index";
+        return "admin/board/list";
     }
-    
-    // 게시판 등록
-    @GetMapping("/register") // add
-    public String register(@ModelAttribute BoardForm boardForm, Model model) {
-        commonProcess(model, "게시판 등록");
 
-        return "admin/board/config";
+    @PatchMapping
+    public String updateList(@RequestParam(name="idx", required = false) List<Integer> idxes, Model model) {
+
+        saveService.update(idxes);
+
+
+        // 수정 완료시 부모창을 새로고침.
+        model.addAttribute("script", "parent.location.reload();");
+
+        return "common/_execute_script";
     }
-    
-    // 게시판 수정
-    @GetMapping("/update/{bId}")
-    public String update(@PathVariable String bId, Model model) {
-        commonProcess(model, "게시판 수정");
 
-        Board board = boardConfigInfoService.get(bId, true);
-        BoardForm boardForm = new ModelMapper().map(board, BoardForm.class);
-        boardForm.setMode("update");
-        boardForm.setListAccessRole(board.getListAccessRole().toString());
-        boardForm.setViewAccessRole(board.getViewAccessRole().toString());
-        boardForm.setWriteAccessRole(board.getWriteAccessRole().toString());
-        boardForm.setReplyAccessRole(board.getReplyAccessRole().toString());
-        boardForm.setCommentAccessRole(board.getCommentAccessRole().toString());
+    @DeleteMapping
+    public String deleteList(@RequestParam(name="idx", required = false) List<Integer> idxes, Model model) {
 
-        model.addAttribute("boardForm", boardForm);
+        deleteService.delete(idxes);
 
-        return "admin/board/config";
+        // 삭제 성공시 부모창 새로고침
+        model.addAttribute("script", "parent.location.reload();");
+        return "common/_execute_script";
     }
-    
-    // 게시글 저장
+
+    @GetMapping("/add")
+    public String register(@ModelAttribute BoardConfigForm form, Model model) {
+        commonProcess("add", model);
+
+        return "admin/board/add";
+    }
+
+    @GetMapping("/edit/{bId}")
+    public String update(@PathVariable("bId") String bId, Model model) {
+        commonProcess("edit", model);
+
+        BoardConfigForm form = infoService.getForm(bId);
+        model.addAttribute("boardConfigForm", form);
+
+        return "admin/board/edit";
+    }
+
     @PostMapping("/save")
-    public String save(@Valid BoardForm boardForm, Errors errors, Model model) {
-        String mode = boardForm.getMode();
-        commonProcess(model, mode != null && mode.equals("update") ? "게시판 수정" : "게시판 등록");
+    public String save(@Valid BoardConfigForm form, Errors errors, Model model) {
 
-        try {
-            configSaveService.save(boardForm, errors);
-        } catch (CommonException e) {
-            errors.reject("BoardConfigError", e.getMessage());
-        }
+        String mode = Objects.requireNonNullElse(form.getMode(), "add");
+        commonProcess(mode, model);
 
         if (errors.hasErrors()) {
-            return "admin/board/config";
+            return "admin/board/" + mode;
         }
 
+        saveService.save(form);
 
-        return "redirect:/admin/board"; // 게시판 목록
+        return "redirect:/admin/board";
     }
 
-    private void commonProcess(Model model, String mode) {
-        mode = Objects.requireNonNullElse(mode, "list");
-
+    private void commonProcess(String mode, Model model) {
         String pageTitle = "게시판 목록";
-
-        if (mode.equals("register")) {
-            pageTitle = "게시판 등록";
-        } else if (mode.equals("update")) {
-            pageTitle = "게시글 수정";
-        } else if (mode.equals("posts")) {
-            pageTitle = "게시글 관리";
-        }
-
-        model.addAttribute("menuCode", "board");
-
-        // 서브 메뉴 처리
-        String subMenuCode = Menu.getSubMenuCode(request);
-        subMenuCode = mode.equals("update") ? "register" : subMenuCode;
-        model.addAttribute("subMenuCode", subMenuCode);
-
-        List<MenuDetail> submenus = Menu.gets("board");
-        model.addAttribute("submenus", submenus);
+        mode = Objects.requireNonNullElse(mode, "list");
+        if (mode.equals("add")) pageTitle = "게시판 등록";
+        else if (mode.equals("edit")) pageTitle = "게시판 수정";
 
         model.addAttribute("pageTitle", pageTitle);
+        model.addAttribute("menuCode", "board");
+        model.addAttribute("submenus", Menu.gets("board"));
+        model.addAttribute("subMenuCode", Menu.getSubMenuCode(request));
+
+        model.addAttribute("authorities", BoardAuthority.getList());
     }
 }

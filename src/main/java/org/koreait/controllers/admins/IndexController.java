@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller("adminIndexController") // 클래스 충돌 방지 (이름 변경)
+@Controller("adminIndexController")
 @RequestMapping("/admin")
 public class IndexController {
     @GetMapping

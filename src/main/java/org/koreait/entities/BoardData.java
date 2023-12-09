@@ -6,52 +6,56 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
-@Entity @Data @Builder
-@AllArgsConstructor @NoArgsConstructor
-@Table(indexes={
-        @Index(name="idx_boarddata_category", columnList = "category DESC"),
-        @Index(name="idx_boarddata_createAt", columnList = "createdAt DESC")
+@Entity
+@Data @Builder
+@NoArgsConstructor @AllArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_board_data_list", columnList = "notice DESC, createdAt DESC" ),
+        @Index(name = "idx_bd_category", columnList = "category, notice DESC, createdAt DESC")
 })
 public class BoardData extends Base {
 
     @Id @GeneratedValue
-    private Long seq; // 게시글 번호
+    private Long seq;
+
+    @Column(length = 50, nullable = false)
+    private String gid = UUID.randomUUID().toString();
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="bId")
     private Board board;
 
-    @Column(length=65, nullable = false)
-    private String gid = UUID.randomUUID().toString();
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="userNo")
+    private Member member;
 
-    @Column(length=40, nullable = false)
-    private String poster; // 작성자
+    @Column(length = 50)
+    private String category;
 
-    @Column(length=65)
+    @Column(length = 30, nullable = false)
+    private String poster;
+
+    @Column(length = 65)
     private String guestPw; // 비회원 비밀번호
 
-    @Column(length=60)
-    private String category; // 게시판 분류
-
     @Column(nullable = false)
-    private String subject; // 제목
+    private String subject;
 
     @Lob
     @Column(nullable = false)
-    private String content; // 내용
-    private int hit; // 조회수
+    private String content;
 
-    @Column(length=125)
-    private String ua; // User-Agent : 브라우저 정보
+    private boolean notice; // 공지사항 여부
+    
+    // 첨부파일
+    
+    @Transient
+    private List<FileInfo> editorImages;
 
-    @Column(length=20)
-    private String ip; // 작성자 IP
+    @Transient
+    private List<FileInfo> attachFiles;
 
-    private int commentCnt; // 댓글 수
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="userNo")
-    private Member member; // 작성 회원
 }

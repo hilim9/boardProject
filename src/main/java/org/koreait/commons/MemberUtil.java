@@ -13,44 +13,23 @@ import org.springframework.stereotype.Component;
 public class MemberUtil {
     private final HttpSession session;
 
-    /**
-     * 로그인 여부 체크
-     * @return
-     *
-     * true면 로그인 false면 로그인 X
-     */
     public boolean isLogin() {
-
         return getMember() != null;
     }
 
     /**
-     * 현재 사용자가 관리자 권한을 가지고 있는지 확인.
-     *
-     * @return 관리자 권한이 있는 경우 true, 아닌 경우 false를 반환.
+     * 관리자 여부 체크
+     * @return
      */
     public boolean isAdmin() {
-        return isLogin() && getMember().member.getMtype() == MemberType.ADMIN;
+        return isLogin() && getMember().getMtype() == MemberType.ADMIN;
     }
 
+    public Member getMember() {
 
-    /**
-     * 현재 로그인 중인 회원 정보를 가져옴.
-     *
-     * @return 현재 로그인 중인 회원 정보 객체를 반환.
-     */
-    public MemberInfo getMember() {
-
-        MemberInfo memberInfo = (MemberInfo)session.getAttribute("loginMember");
-
-        return memberInfo;
+        return (Member)session.getAttribute("loginMember");
     }
 
-    /**
-     * 현재 로그인 중인 회원 정보를 엔티티 객체로 변환하여 반환.
-     *
-     * @return 로그인 중인 회원 정보의 엔티티 객체를 반환합니다. 로그인 중이 아닌 경우에는 null을 반환.
-     */
     public Member getEntity() {
         if (isLogin()) {
             Member member = new ModelMapper().map(getMember(), Member.class);

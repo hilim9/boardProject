@@ -25,4 +25,3 @@ public class AuthorizationException extends CommonException {
         super(Utils.getMessage(code, "error"), HttpStatus.UNAUTHORIZED);
     }
 }
-

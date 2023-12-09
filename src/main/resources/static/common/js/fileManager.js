@@ -58,7 +58,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
     const fileEl = document.createElement("input");
     fileEl.type='file';
-    
+
     if (fileEl) {
         for (const el of uploadFiles) {
             el.addEventListener("click", function() {

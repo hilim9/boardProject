@@ -13,15 +13,15 @@ import java.util.UUID;
 @Data @Builder
 @NoArgsConstructor @AllArgsConstructor
 @Table(indexes = {
-        @Index(name = "idx_board_data_list", columnList = "notice DESC, createdAt DESC" ),
-        @Index(name = "idx_bd_category", columnList = "category, notice DESC, createdAt DESC")
+        @Index(name="idx_bd_list", columnList = "notice DESC, createdAt DESC"),
+        @Index(name="idx_bd_category", columnList = "category")
 })
 public class BoardData extends Base {
 
     @Id @GeneratedValue
     private Long seq;
 
-    @Column(length = 50, nullable = false)
+    @Column(length=50, nullable = false)
     private String gid = UUID.randomUUID().toString();
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -32,13 +32,13 @@ public class BoardData extends Base {
     @JoinColumn(name="userNo")
     private Member member;
 
-    @Column(length = 50)
+    @Column(length=50)
     private String category;
 
-    @Column(length = 30, nullable = false)
+    @Column(length=30, nullable = false)
     private String poster;
 
-    @Column(length = 65)
+    @Column(length=65)
     private String guestPw; // 비회원 비밀번호
 
     @Column(nullable = false)
@@ -48,14 +48,11 @@ public class BoardData extends Base {
     @Column(nullable = false)
     private String content;
 
-    private String notice; // 공지사항 여부
-    
-    // 첨부파일
-    
+    private boolean notice; // 공지사항 여부
+
     @Transient
     private List<FileInfo> editorImages;
 
     @Transient
     private List<FileInfo> attachFiles;
-
 }

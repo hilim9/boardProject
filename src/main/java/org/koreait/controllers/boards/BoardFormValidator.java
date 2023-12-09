@@ -22,9 +22,8 @@ public class BoardFormValidator implements Validator, PasswordValidator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        BoardForm form = (BoardForm) target;
-
-        if (!memberUtil.isLogin()) { // 미 로그인 상태 -> 비회원 비밀번호 필수
+        BoardForm form = (BoardForm)target;
+        if (!memberUtil.isLogin()) { // 미로그인 상태 -> 비회원 비밀번호 필수
             String guestPw = form.getGuestPw();
 
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "guestPw", "NotBlank");
@@ -37,11 +36,9 @@ public class BoardFormValidator implements Validator, PasswordValidator {
 
                 // 비회원 비밀번호는 4자리 이상
                 if (guestPw.length() < 4) {
-                    errors.rejectValue("gusetPw", "Size");
+                    errors.rejectValue("guestPw", "Size");
                 }
             }
         }
-
-
     }
 }

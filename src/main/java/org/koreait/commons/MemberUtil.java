@@ -4,8 +4,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.koreait.commons.constants.MemberType;
 import org.koreait.entities.Member;
-import org.koreait.models.member.MemberInfo;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,22 +20,10 @@ public class MemberUtil {
      * @return
      */
     public boolean isAdmin() {
-        return isLogin() && getMember().getMember().getMtype() == MemberType.ADMIN;
+        return isLogin() && getMember().getMtype() == MemberType.ADMIN;
     }
 
-    public MemberInfo getMember() {
-
-        MemberInfo memberInfo = (MemberInfo)session.getAttribute("loginMember");
-
-        return memberInfo;
-    }
-
-    public Member getEntity() {
-        if (isLogin()) {
-            Member member = new ModelMapper().map(getMember(), Member.class);
-            return member;
-        }
-
-        return null;
+    public Member getMember() {
+        return (Member)session.getAttribute("loginMember");
     }
 }

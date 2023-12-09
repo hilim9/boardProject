@@ -33,8 +33,10 @@ public class FileController {
      */
     @PostMapping("/upload")
     public ResponseEntity<JSONData<List<FileInfo>>> uploadPs(
-            @RequestParam(value = "files", required = false) MultipartFile[] files, @RequestParam(value = "gid", required = false) String gid,
+            @RequestParam(value = "files", required = false) MultipartFile[] files,
+            @RequestParam(value = "gid", required = false) String gid,
             @RequestParam(value = "location", required = false) String location) {
+
         List<FileInfo> items = uploadService.upload(files, gid, location);
 
         JSONData<List<FileInfo>> data = new JSONData<>(items);

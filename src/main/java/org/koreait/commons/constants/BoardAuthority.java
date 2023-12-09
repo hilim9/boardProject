@@ -12,14 +12,13 @@ public enum BoardAuthority {
 
     BoardAuthority(String title) {
         this.title = title;
-
     }
 
     public static List<String[]> getList() {
         return Arrays.asList(
-            new String[] { ALL.name(), ALL.title },
-            new String[] { MEMBER.name(), MEMBER.title },
-            new String[] { ADMIN.name(), ADMIN.title }
+          new String[] { ALL.name(), ALL.title },
+          new String[] { MEMBER.name(), MEMBER.title},
+          new String[] { ADMIN.name(), ADMIN.title }
         );
     }
 
@@ -27,4 +26,3 @@ public enum BoardAuthority {
         return title;
     }
 }
-

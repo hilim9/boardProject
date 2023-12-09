@@ -17,13 +17,11 @@ public class BoardConfigDeleteService {
     private final Utils utils;
 
     /**
-     * 목록에서 개별 삭제
+     * 게시판 설정 삭제
      *
      * @param bId
      */
-
     public void delete(String bId) {
-
         Board board = repository.findById(bId).orElseThrow(BoardNotFoundException::new);
 
         repository.delete(board);
@@ -35,12 +33,11 @@ public class BoardConfigDeleteService {
      *
      * @param idxes
      */
-
     public void delete(List<Integer> idxes) {
-
         if (idxes == null || idxes.isEmpty()) {
-            throw new AlertException("삭제할 게시판을 선택하세요");
+            throw new AlertException("삭제할 게시판을 선택하세요.");
         }
+
 
         for (int idx : idxes) {
             String bId = utils.getParam("bId_" + idx);
@@ -48,8 +45,8 @@ public class BoardConfigDeleteService {
             if (board == null) continue;
 
             repository.delete(board);
-            repository.flush();
         }
 
+        repository.flush();
     }
 }

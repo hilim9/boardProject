@@ -40,25 +40,24 @@ public class BoardConfigSaveService {
     }
 
     /**
-     *  게시판 설정 목록 수정
+     * 게시판 설정 목록 수정
      *
      * @param idxes
      */
     public void update(List<Integer> idxes) {
-
         if (idxes == null || idxes.isEmpty()) {
-            throw new AlertException("수정할 게시판을 선택하세요");
+            throw new AlertException("수정할 게시판을 선택하세요.");
         }
 
         for (int idx : idxes) {
-
             String bId = utils.getParam("bId_" + idx);
             Board board = boardRepository.findById(bId).orElse(null);
             if (board == null) continue;
 
             String bName = utils.getParam("bName_" + idx);
             boolean active = Boolean.parseBoolean(utils.getParam("active_" + idx));
-            BoardAuthority authority = BoardAuthority.valueOf(utils.getParam("authority_" + idx));
+            BoardAuthority authority =
+                    BoardAuthority.valueOf(utils.getParam("authority_" + idx));
 
             board.setBName(bName);
             board.setActive(active);
@@ -66,7 +65,5 @@ public class BoardConfigSaveService {
         }
 
         boardRepository.flush();
-
     }
-
 }

@@ -17,17 +17,13 @@ spring:
   jpa:
     properties:
       hibernate:
-        # 예약어 사용 가능
-        # globally_quoted_identifiers: true
-        # 실행되는 쿼리 콘솔 출력
+        globally_quoted_identifiers: true
+        # 실행되는 쿼리를 콘솔에 출력
         show_sql: true
-        # 콘솔 창에 출력되는 쿼리를 가독성 좋게 포매팅
         format_sql: true
         use_sql_comments: true
-        # 데이터베이스 플랫폼 설정
         dialect: org.hibernate.dialect.OracleDialect
     hibernate:
-      # DDL create 자동 (테이블 자동 생성 등)
       ddlAuto: create
 
   # 파일 업로드 설정
@@ -36,7 +32,7 @@ spring:
       maxFileSize: 20MB
       maxRequestSize: 40MB
 
-  # 정적 자원 설정 (CSS, JS, 이미지)
+  # 정적 자원 설정(CSS, JS, 이미지)
   web:
     resources:
       staticLocations: file:src/main/resources/static/
@@ -67,4 +63,3 @@ logging:
         type:
           descriptor:
             sql: trace
-

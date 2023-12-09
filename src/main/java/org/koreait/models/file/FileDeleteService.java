@@ -5,12 +5,12 @@ import org.koreait.commons.MemberUtil;
 import org.koreait.commons.exceptions.AuthorizationException;
 import org.koreait.entities.FileInfo;
 import org.koreait.entities.Member;
-import org.koreait.models.member.MemberInfo;
 import org.koreait.repositories.FileInfoRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class FileDeleteService {
 
         /** 파일 삭제 권한 체크 S */
         String createdBy = item.getCreatedBy(); // 파일 업로드한 사용자 아이디
-        MemberInfo member = memberUtil.getMember(); // 현재 로그인한 회원 정보 조회
+        Member member = memberUtil.getMember(); // 현재 로그인한 회원 정보 조회
 
         // 파일을 업로드한 사용자와 현재 로그인한 회원이 같은지, 또는 관리자 권한인지 확인
         if (createdBy != null && !createdBy.isBlank() && !memberUtil.isAdmin()
@@ -62,5 +62,12 @@ public class FileDeleteService {
 
         repository.delete(item); // 파일 정보 삭제
         repository.flush();
+    }
+
+    public void deleteByGid(String gid) {
+
+        List<FileInfo> files = infoService.getListAll(gid);
+        files.forEach(file -> delete(file.getId()));
+
     }
 }

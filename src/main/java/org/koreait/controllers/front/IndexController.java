@@ -10,5 +10,5 @@ public class IndexController {
 
     @GetMapping
     public String index() {
-        return "front/main/index";}
+        return "front/main/index";
 }
